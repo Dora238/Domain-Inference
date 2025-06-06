@@ -37,9 +37,7 @@ class BlackBox:
             
         # 加载模型和分词器
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-        self.model = AutoModelForSequenceClassification.from_pretrained(
-            self.model_name
-        ).to(self.device)
+        self.model = AutoModelForSequenceClassification.from_pretrained(self.model_name).to(self.device)
         self.model.eval()
         
         # 获取标签数量
@@ -58,24 +56,21 @@ class BlackBox:
         Raises:
             RuntimeError: 如果预测失败
         """
-        try:
-            # 对输入进行分词
-            inputs = self.tokenizer(
-                texts,
-                return_tensors="pt",
-                padding=True,
-                truncation=True,
-                max_length=512
-            ).to(self.device)
+        # 对输入进行分词
+        inputs = self.tokenizer(
+            texts,
+            return_tensors="pt",
+            padding=True,
+            truncation=True,
+            max_length=512
+        ).to(self.device)
+        
+        # 获取模型预测
+        outputs = self.model(**inputs)
+        predictions = torch.argmax(outputs.logits, dim=1)
+        
+        return predictions.tolist()
             
-            # 获取模型预测
-            outputs = self.model(**inputs)
-            predictions = torch.argmax(outputs.logits, dim=1)
-            
-            return predictions.cpu().tolist()
-            
-        except Exception as e:
-            raise RuntimeError(f"BlackBox 预测失败: {str(e)}")
 
 
 if __name__ == "__main__":

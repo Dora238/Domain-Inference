@@ -88,7 +88,11 @@ def main():
     blackbox = BlackBox(endpoint=args.blackbox_endpoint)
     
     prompt_vec = PromptVector(
-        hidden_dim=model.config.hidden_size
+        hidden_dim=model.config.hidden_size,
+        init_method='wordnet',
+        embedding_model=blackbox,
+        max_words=5000,
+        min_words_per_category=20
     ).to(device)
     
     # Run optimization

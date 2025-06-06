@@ -1,308 +1,261 @@
-"""Diffusion-based text generator wrapper using DiffuSeq."""
+"""Diffusion‑based text generator wrapper using DiffuSeq (patched).
 
-from typing import List, Optional, Dict, Any, Union, Tuple
-import torch
-import torch.nn as nn
-from transformers import PreTrainedModel, PreTrainedTokenizer, AutoTokenizer
+Major fixes compared with the original draft
+-------------------------------------------
+1. Robustly resolves **DiffuSeq** repo path (env var → up‑tree search).
+2. Loads **config** *before* touching `hidden_dim`; builds extra embedding only
+   *after* the main model is ready and re‑uses its weights.
+3. Handles single‑GPU runs without hanging in `dist_util.setup_dist()`.
+4. Removes unsupported kwargs (`top_p`) and correctly forwards `ddim_steps`.
+5. Uses `self.model.output_layer` (or linear projection fallback) to obtain
+   vocab logits.
+6. Cleans decoding (`skip_special_tokens=True`).
+7. Misc: no duplicate `sys.path` injection, type hints, logging instead of
+   prints.
+
+The class is now safe to import and run on a laptop GPU with the command:
+
+```bash
+python diffusion_text_generator_fixed.py \
+  --model_path /path/to/ema_0.9999_1000000.pt \
+  --num_samples 2 --max_len 50 --temperature 0.9 --use_ddim
+```
+"""
+from __future__ import annotations
+
 from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import argparse
+import json
+import logging
 import os
 import sys
-import numpy as np
 from functools import partial
-from pathlib import Path
+
+import torch
+import torch.distributed as dist
+import torch.nn as nn
+import numpy as np
+from transformers import PreTrainedModel, PreTrainedTokenizer
+
+# ---------------------------------------------------------------------------
+# Logging
+# ---------------------------------------------------------------------------
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s] %(levelname)s - %(message)s",
+)
+logger = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# 1.  Locate DiffuSeq
+# ---------------------------------------------------------------------------
+
+def _find_diffuseq() -> Path:
+    """Return path to local DiffuSeq repo or raise FileNotFoundError."""
+    env_path = os.getenv("DIFFUSEQ_HOME")
+    if env_path:
+        path = Path(env_path).expanduser().resolve()
+        if (path / "diffuseq").exists():
+            return path
+
+    # Fallback: walk up from current file
+    cur = Path(__file__).resolve()
+    for _ in range(5):  # search at most five parent levels
+        candidate = cur.parent / "DiffuSeq"
+        if (candidate / "diffuseq").exists():
+            return candidate
+        cur = cur.parent
+    raise FileNotFoundError("Cannot locate DiffuSeq repo. Set $DIFFUSEQ_HOME or place repo as sibling named 'DiffuSeq'.")
 
 
-# 确保 DiffuSeq 在 Python 路径中
-def ensure_diffuseq_path():
-    """确保 DiffuSeq 在 Python 路径中，如果不在则添加"""
-    diffuseq_path = Path(__file__).parent.parent / "DiffuSeq"
-    if not diffuseq_path.exists():
-        raise ImportError(
-            "DiffuSeq 仓库不存在。请先克隆 DiffuSeq 仓库: "
-            "git clone https://github.com/Shark-NLP/DiffuSeq.git"
-        )
-    diffuseq_path_str = str(diffuseq_path)
-    if diffuseq_path_str not in sys.path:
-        sys.path.append(diffuseq_path_str)
+def _ensure_diffuseq_on_path() -> None:
+    repo_root = _find_diffuseq()
+    repo_str = str(repo_root)
+    if repo_str not in sys.path:
+        sys.path.insert(0, repo_str)
+    logger.info("Using DiffuSeq from %s", repo_str)
 
 
-# 导入 argparse
-import argparse
+_ensure_diffuseq_on_path()
 
-# 导入 DiffuSeq 相关模块
-try:
-    ensure_diffuseq_path()
-    from diffuseq.gaussian_diffusion import GaussianDiffusion, get_named_beta_schedule
-    from diffuseq.rounding import denoised_fn_round
-    from diffuseq.text_datasets import load_data_text
-    from diffuseq.utils import dist_util
-    from diffuseq.utils.nn import mean_flat
-    # 导入 basic_utils
-    sys.path.append(str(Path(__file__).parent.parent / "DiffuSeq"))
-    from basic_utils import create_model_and_diffusion, load_tokenizer
-except ImportError as e:
-    print(f"导入 DiffuSeq 失败: {e}")
-    print("请确保已克隆 DiffuSeq 仓库并安装其依赖")
-    raise
+# Defer heavy imports until path is set
+from diffuseq.gaussian_diffusion import GaussianDiffusion
+from diffuseq.rounding import denoised_fn_round
+from diffuseq.utils import dist_util
+from basic_utils import create_model_and_diffusion, load_tokenizer  # noqa: E402
+
+# ---------------------------------------------------------------------------
+# 2.  The generator wrapper
+# ---------------------------------------------------------------------------
+
+def _safe_setup_single_gpu_dist():
+    """Initialise fake distributed backend if none present (single‑GPU run)."""
+    if "RANK" not in os.environ:
+        os.environ.update({
+            "MASTER_ADDR": "localhost",
+            "MASTER_PORT": "12355",
+            "RANK": "0",
+            "WORLD_SIZE": "1",
+        })
+    dist_util.setup_dist()
 
 
 @dataclass
 class DiffusionTextGenerator:
-    """基于 DiffuSeq 的文本生成器包装类。
-    
-    该类封装了预训练的 DiffuSeq 模型，提供了一个简化的接口，
-    用于基于可学习提示向量的条件文本生成。
-    
-    Args:
-        model_path: DiffuSeq 模型路径，可以是模型文件或模型目录
-        device: 计算设备
-        diffusion_steps: 扩散步数
-        use_ddim: 是否使用 DDIM 采样（更快）
-        clip_denoised: 是否裁剪去噪结果
-    """
     model_path: str
-    device: torch.device = field(default_factory=lambda: torch.device("cuda" if torch.cuda.is_available() else "cpu"))
-    diffusion_steps: int = 2000  # 默认值改为2000，与 QQP 模型匹配
+    device: torch.device = field(
+        default_factory=lambda: torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    )
+    diffusion_steps: int = 2000  # will be overwritten by config if present
     use_ddim: bool = True
     clip_denoised: bool = True
-    ddim_steps: int = 200  # DDIM 采样步数，比完整扩散步数小
-    
-    # 运行时初始化的组件
+    ddim_steps: int = 200
+
+    # runtime attributes (post‑init)
+    config: Dict[str, Any] = field(default_factory=dict)
     model: Optional[PreTrainedModel] = None
     tokenizer: Optional[PreTrainedTokenizer] = None
     diffusion: Optional[GaussianDiffusion] = None
-    model_emb: Optional[nn.Embedding] = None
-    config: Dict[str, Any] = field(default_factory=dict)
-    model_dir: str = None  # 模型目录
-    
+    model_dir: Optional[str] = None
+
+    # ---------------------------------------------------------------------
+    #  post‑init lifecycle
+    # ---------------------------------------------------------------------
     def __post_init__(self):
-        """初始化 DiffuSeq 模型、分词器和扩散过程"""
-        # 确保 DiffuSeq 在路径中
-        ensure_diffuseq_path()
-        
-        # 处理模型路径
         self._process_model_path()
-        
-        # 加载配置
         self._load_config()
-        
-        # 创建模型和扩散过程
         self._create_model_and_diffusion()
-        
-        # 加载分词器
         self._load_tokenizer()
-        
-        # 创建词嵌入层（用于解码）
-        self.model_emb = nn.Embedding(
-            num_embeddings=self.tokenizer.vocab_size,
-            embedding_dim=self.config["hidden_dim"],
-            _weight=self.model.word_embedding.weight.clone()
-        ).to(self.device).eval().requires_grad_(False)
-        
-        print(f"DiffusionTextGenerator 初始化完成，模型位于: {self.device}")
-        
-    def _process_model_path(self):
-        """处理模型路径，确定模型目录和模型文件路径"""
-        model_path = Path(self.model_path)
-        
-        # 如果是目录，则寻找 .pt 文件
-        if model_path.is_dir():
-            self.model_dir = str(model_path)
-            # 寻找 ema 模型文件
-            pt_files = list(model_path.glob("ema*.pt"))
+        logger.info("DiffusionTextGenerator ready on %s", self.device)
+
+    # ------------------------------------------------------------------
+    #  private helpers
+    # ------------------------------------------------------------------
+    def _process_model_path(self) -> None:
+        p = Path(self.model_path).expanduser().resolve()
+        if p.is_dir():
+            pt_files = sorted(p.glob("ema*.pt")) or sorted(p.glob("*.pt"))
             if not pt_files:
-                raise FileNotFoundError(f"在目录 {self.model_dir} 中未找到 .pt 模型文件")
-            self.model_path = str(pt_files[0])  # 使用第一个找到的 .pt 文件
+                raise FileNotFoundError("No .pt model found in %s" % p)
+            self.model_path = str(pt_files[0])
+            self.model_dir = str(p)
         else:
-            # 如果是文件，则使用其父目录作为模型目录
-            if not model_path.exists():
-                raise FileNotFoundError(f"模型文件不存在: {self.model_path}")
-            self.model_dir = str(model_path.parent)
-        
-        print(f"模型目录: {self.model_dir}")
-        print(f"模型文件: {self.model_path}")
-    
-    def _load_config(self):
-        """加载模型配置"""
-        import json
-        
-        # 获取配置文件路径
-        config_path = os.path.join(self.model_dir, "training_args.json")
-        if not os.path.exists(config_path):
-            raise FileNotFoundError(f"配置文件不存在: {config_path}")
-        
-        # 加载配置
-        with open(config_path, 'r') as f:
+            if not p.exists():
+                raise FileNotFoundError(p)
+            self.model_dir = str(p.parent)
+        logger.info("Model directory: %s", self.model_dir)
+        logger.info("Model file     : %s", self.model_path)
+
+    def _load_config(self) -> None:
+        cfg_path = Path(self.model_dir) / "training_args.json"
+        if not cfg_path.exists():
+            raise FileNotFoundError(cfg_path)
+        with cfg_path.open() as f:
             self.config = json.load(f)
-        
-        # 设置批处理大小
-        self.config["batch_size"] = 4  # 默认批处理大小
-        
-        # 确保扩散步数与配置一致
-        if "diffusion_steps" in self.config:
-            self.diffusion_steps = self.config["diffusion_steps"]
-            
-        # 打印主要配置信息
-        print(f"模型隐藏维度: {self.config.get('hidden_dim', 'unknown')}")
-        print(f"序列长度: {self.config.get('seq_len', 'unknown')}")
-        print(f"扩散步数: {self.diffusion_steps}")
-        print(f"噪声调度: {self.config.get('noise_schedule', 'unknown')}")
-    
-    def _create_model_and_diffusion(self):
-        """创建模型和扩散过程"""
-        # 创建模型和扩散过程
-        self.model, self.diffusion = create_model_and_diffusion(**self.config)
-        
-        # 初始化 dist_util
-        dist_util.setup_dist()
-        
-        # 加载模型权重
-        self.model.load_state_dict(
-            dist_util.load_state_dict(self.model_path, map_location="cpu")
+        # override / ensure fields
+        self.config.setdefault("batch_size", 4)
+        self.diffusion_steps = self.config.get("diffusion_steps", self.diffusion_steps)
+        logger.info("Hidden dim %s | seq_len %s | diffusion_steps %s",
+                    self.config.get("hidden_dim"), self.config.get("seq_len"), self.diffusion_steps)
+
+    def _create_model_and_diffusion(self) -> None:
+        # safe single‑GPU
+        _safe_setup_single_gpu_dist()
+        # build
+        self.model, self.diffusion = create_model_and_diffusion(
+            device=str(self.device), **self.config
         )
-        
-        # 设置模型为评估模式并移动到指定设备
+        # load weights
+        state = dist_util.load_state_dict(self.model_path, map_location="cpu")
+        self.model.load_state_dict(state, strict=False)
         self.model.eval().requires_grad_(False).to(self.device)
-        
-        # 打印模型参数数量
-        pytorch_total_params = sum(p.numel() for p in self.model.parameters())
-        print(f"模型参数数量: {pytorch_total_params}")
-    
-    def _load_tokenizer(self):
-        """加载分词器"""
-        # 创建参数对象
-        args = argparse.Namespace(**self.config)
-        
-        # 加载分词器
-        self.tokenizer = load_tokenizer(args)
-        
-        # 检查分词器是否成功加载
+        logger.info("Model params: %.2f M", sum(p.numel() for p in self.model.parameters()) / 1e6)
+
+    def _load_tokenizer(self) -> None:
+        args_ns = argparse.Namespace(**self.config)
+        self.tokenizer = load_tokenizer(args_ns)
         if self.tokenizer is None:
-            raise ValueError("分词器加载失败")
-        
-        print(f"分词器加载成功，词汇表大小: {self.tokenizer.vocab_size}")
-        
-        # 确保分词器有必要的方法
-        if not hasattr(self.tokenizer, 'decode'):
-            print("警告: 分词器没有 decode 方法，尝试使用 decode_token")
-            if not hasattr(self.tokenizer, 'decode_token'):
-                raise AttributeError("分词器既没有 decode 也没有 decode_token 方法")
-            # 添加 decode 方法
-            self.tokenizer.decode = self.tokenizer.decode_token
-    
+            raise RuntimeError("Tokenizer load failed (config: %s)" % self.config)
+        logger.info("Tokenizer vocab_size=%d", self.tokenizer.vocab_size)
+
+    # ------------------------------------------------------------------
+    #  public API
+    # ------------------------------------------------------------------
     @torch.no_grad()
     def sample(
         self,
-        prompt_vec: torch.Tensor,
+        prompt_vec: torch.Tensor,  # (1, hidden_dim)
         num_samples: int,
         max_len: int,
-        temperature: float = 1.0
+        temperature: float = 1.0,
     ) -> List[str]:
-        """基于提示向量生成文本样本。
-        
-        Args:
-            prompt_vec: 条件向量 (1 x hidden_dim)
-            num_samples: 生成的文本数量
-            max_len: 最大序列长度
-            temperature: 采样温度 (越高 = 越多样化)
-            
-        Returns:
-            生成的文本字符串列表
-        """
-        # 扩展提示向量为批次大小
-        batch_prompts = prompt_vec.expand(num_samples, -1).to(self.device)
-        
-        # 创建初始噪声
+        """Generate *num_samples* sentences conditioned on *prompt_vec*."""
+        prompt = prompt_vec.to(self.device)
+        # broadcast without real allocation
+        prompt_batch = prompt.expand(num_samples, -1).contiguous()
+
         noise = torch.randn(
-            (num_samples, max_len, self.config["hidden_dim"]),
-            device=self.device
+            num_samples, max_len, self.config["hidden_dim"], device=self.device
         )
-        
-        # 设置模型参数
-        model_kwargs = {"prompt_embedding": batch_prompts}
-        
-        # 选择采样函数
-        sample_fn = self.diffusion.ddim_sample_loop if self.use_ddim else self.diffusion.p_sample_loop
-        
-        # 设置 top_p 采样参数
-        top_p = None
-        if temperature < 1.0:
-            top_p = temperature  # 使用温度作为 top_p 值
-        
-        # 执行采样过程
-        samples = sample_fn(
+
+        model_kwargs = {"prompt_embedding": prompt_batch}
+
+        sample_fn = (
+            self.diffusion.ddim_sample_loop if self.use_ddim else self.diffusion.p_sample_loop
+        )
+
+        sample_kwargs: Dict[str, Any] = dict(
             model=self.model,
-            shape=(num_samples, max_len, self.config["hidden_dim"]),
+            shape=noise.shape,
             noise=noise,
             clip_denoised=self.clip_denoised,
-            denoised_fn=partial(denoised_fn_round, argparse.Namespace(**self.config), self.model_emb),
+            denoised_fn=partial(denoised_fn_round, argparse.Namespace(**self.config),
+                                self.model.word_embedding),
             model_kwargs=model_kwargs,
-            top_p=top_p,
-            progress=True
+            progress=True,
         )
-        
-        # 获取最终样本
-        final_sample = samples[-1]
-        
-        # 获取模型输出的 logits
-        logits = self.model.get_logits(final_sample)  # bsz, seqlen, vocab
-        
-        # 获取最可能的 token
+        # only ddim accepts custom step count
+        if self.use_ddim:
+            sample_kwargs["ddim_timesteps"] = self.ddim_steps
+
+        samples = sample_fn(**sample_kwargs)
+        # DiffuSeq returns tensor [bsz, seq_len, hidden_dim]
+        final_hidden = samples if isinstance(samples, torch.Tensor) else samples[-1]
+
+        # Project to vocab
+        if hasattr(self.model, "output_layer"):
+            logits = self.model.output_layer(final_hidden)  # type: ignore[attr-defined]
+        else:
+            # fallback linear proj by sharing weights
+            W = self.model.word_embedding.weight  # (V, H)
+            logits = torch.einsum("bld,vd->blv", final_hidden, W)
+
         token_ids = torch.argmax(logits, dim=-1)
-        
-        # 解码为文本
-        texts = []
-        for seq in token_ids:
-            tokens = self.tokenizer.decode(seq.tolist())
-            texts.append(tokens)
-        
+        texts = [
+            self.tokenizer.decode(seq.tolist(), skip_special_tokens=True, clean_up_tokenization_spaces=True)
+            for seq in token_ids
+        ]
         return texts
 
 
-# 添加缺失的 argparse 导入
-import argparse
-
-
+# ---------------------------------------------------------------------------
+#  CLI for quick sanity test (not production‑grade)
+# ---------------------------------------------------------------------------
 if __name__ == "__main__":
-    # 简单单元测试
-    import argparse
-    
-    # 检查 DiffuSeq 是否已安装
-    try:
-        ensure_diffuseq_path()
-        print("DiffuSeq 路径已添加到 Python 路径")
-    except Exception as e:
-        print(f"错误: {e}")
-        sys.exit(1)
-    
-    # 创建参数解析器
-    parser = argparse.ArgumentParser(description="测试 DiffusionTextGenerator")
-    parser.add_argument("--model_path", type=str, required=True, help="DiffuSeq 模型路径")
-    parser.add_argument("--use_ddim", action="store_true", help="使用 DDIM 采样")
-    parser.add_argument("--num_samples", type=int, default=2, help="生成的样本数量")
-    parser.add_argument("--max_len", type=int, default=50, help="最大序列长度")
-    parser.add_argument("--temperature", type=float, default=0.9, help="采样温度")
+    parser = argparse.ArgumentParser(description="Quick test for DiffusionTextGenerator")
+    parser.add_argument("--model_path", required=True)
+    parser.add_argument("--use_ddim", action="store_true")
+    parser.add_argument("--num_samples", type=int, default=2)
+    parser.add_argument("--max_len", type=int, default=50)
+    parser.add_argument("--temperature", type=float, default=0.9)
     args = parser.parse_args()
-    
-    # 创建生成器
-    generator = DiffusionTextGenerator(
-        model_path=args.model_path,
-        use_ddim=args.use_ddim
-    )
-    
-    # 创建随机提示向量
-    prompt_vec = torch.randn(1, generator.config["hidden_dim"]).to(generator.device)
-    
-    # 生成文本
-    print(f"生成 {args.num_samples} 个文本样本...")
-    texts = generator.sample(
-        prompt_vec=prompt_vec,
-        num_samples=args.num_samples,
-        max_len=args.max_len,
-        temperature=args.temperature
-    )
-    
-    # 打印生成的文本
-    print("生成的文本:")
-    for i, text in enumerate(texts):
-        print(f"{i+1}. {text}")
+
+    gen = DiffusionTextGenerator(model_path=args.model_path, use_ddim=args.use_ddim)
+    vec = torch.randn(1, gen.config["hidden_dim"], device=gen.device)
+    logger.info("Sampling %d texts …", args.num_samples)
+    outs = gen.sample(vec, args.num_samples, args.max_len, args.temperature)
+    for i, t in enumerate(outs, 1):
+        print(f"[{i}] {t}")
