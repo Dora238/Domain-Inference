@@ -6,11 +6,11 @@ from tqdm import tqdm
 import json
 from pathlib import Path
 
-from .prompt_vector import PromptVector
-from .diffusion import DiffusionTextGenerator
-from .blackbox import BlackBox
-from .reinforce import REINFORCEOptimizer
-from .metrics import MetricsCalculator
+from wordnet_conditioner import WordNetConditioner
+from diffusion import DiffusionTextGenerator
+from blackbox import BlackBox
+from reinforce import REINFORCEOptimizer
+from metrics import MetricsCalculator
 
 
 def optimise_prompt_vector(
@@ -137,7 +137,7 @@ if __name__ == "__main__":
     
     generator = MockGenerator(model, tokenizer, device)
     blackbox = MockBlackBox("dummy_endpoint")
-    prompt_vec = PromptVector(hidden_dim=model.config.hidden_size).to(device)
+    prompt_vec = WordNetConditioner(hidden_dim=model.config.hidden_size).to(device)
     
     # Test optimization
     optimise_prompt_vector(

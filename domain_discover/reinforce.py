@@ -6,9 +6,9 @@ import torch.nn as nn
 from torch.distributions import Normal
 import numpy as np
 
-from .prompt_vector import PromptVector
-from .diffusion import DiffusionTextGenerator
-from .blackbox import BlackBox
+from wordnet_conditioner import WordNetConditioner
+from diffusion import DiffusionTextGenerator
+from blackbox import BlackBox
 
 
 class REINFORCEOptimizer:
@@ -29,7 +29,7 @@ class REINFORCEOptimizer:
     
     def __init__(
         self,
-        prompt: PromptVector,
+        prompt: WordNetConditioner,
         generator: DiffusionTextGenerator,
         blackbox: BlackBox,
         target_label: int,
@@ -123,7 +123,7 @@ if __name__ == "__main__":
             return [1] * len(texts)  # Always return target label
     
     # Create test instances
-    prompt = PromptVector(hidden_dim=4)
+    prompt = WordNetConditioner(hidden_dim=4)
     generator = MockGenerator()
     blackbox = MockBlackBox()
     
