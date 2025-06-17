@@ -5,6 +5,8 @@ import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from dataclasses import dataclass
 
+from transformers.pipelines.object_detection import Predictions
+
 
 @dataclass
 class BlackBox:
@@ -39,6 +41,7 @@ class BlackBox:
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
         self.model = AutoModelForSequenceClassification.from_pretrained(self.model_name).to(self.device)
         self.model.eval()
+        self.model_name = self.model_name.split("/")[-1]
         
         # 获取标签数量
         self.num_labels = self.model.config.num_labels
