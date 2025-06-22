@@ -23,7 +23,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from sklearn.metrics import silhouette_score
 import os
 from collections import Counter
-
+import json
 
 class WordNetConditioner(nn.Module):
     """Learnable prompt vector for steering text generation.
@@ -262,24 +262,43 @@ class WordNetConditioner(nn.Module):
 
         return model_name, score
 
-    def generate_sentences(self, lemma, num_samples=20):
+    def generate_sentences(self, lemma, max_sentences=20):
         prompt = f"Write one short English sentence using the word '{lemma}'. Only output the sentence.\n"
         sentences = []
-        for _ in range(num_samples):
-            inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
-            output_ids = self.model.generate(
-                **inputs,
-                max_length=64,
-                temperature=0.8,
-                top_p=0.95,
-                do_sample=True,
-                pad_token_id=self.tokenizer.eos_token_id
-            )
-            full_output = self.tokenizer.decode(output_ids[0], skip_special_tokens=True).strip()
-            sentence = full_output.replace(prompt.strip(), "").strip()
-            if sentence:
-                sentences.append(sentence)
+        inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
+        output_ids = self.model.generate(
+            **inputs,
+            num_beams=max_sentences,
+            num_beam_groups=max_sentences,
+            max_length=64,
+            temperature=0.7,
+            # top_p=0.95,
+            do_sample=False,
+            diversity_penalty=3.0,
+            no_repeat_ngram_size=2,
+            repetition_penalty=10.0,
+            pad_token_id=self.tokenizer.eos_token_id,
+            num_return_sequences=max_sentences,
+        )
+        full_output = self.tokenizer.batch_decode(output_ids, skip_special_tokens=True)
+        sentences = [full_output.replace(prompt.strip(), "").strip() for full_output in full_output]
+        sentences = [s for s in sentences if s] 
         return sentences
+        # for _ in range(max_sentences):
+        #     inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
+        #     output_ids = self.model.generate(
+        #         **inputs,
+        #         max_length=64,
+        #         temperature=0.8,
+        #         top_p=0.95,
+        #         do_sample=True,
+        #         pad_token_id=self.tokenizer.eos_token_id
+        #     )
+        #     full_output = self.tokenizer.decode(output_ids[0], skip_special_tokens=True).strip()
+        #     sentence = full_output.replace(prompt.strip(), "").strip()
+        #     if sentence:
+        #         sentences.append(sentence)
+        # return sentences
 
     def evaluate_sentences(self, sentences):
         labels = [self.black_model.predict([s])[0] for s in sentences]
@@ -299,7 +318,7 @@ class WordNetConditioner(nn.Module):
                     print(f"已收集 {word_count} 个词汇")
 
                 # 1. 生成多个句子
-                sentences = self.generate_sentences(lemma)
+                sentences = self.generate_sentences(lemma, max_sentences=label_word_limit)
 
                 # 2. 用 black_box 分类
                 majority_label, count, _ = self.evaluate_sentences(sentences)
@@ -322,40 +341,70 @@ class WordNetConditioner(nn.Module):
 
         return words_dict
 
-    def collect_sentences(self, max_words=500, label_word_limit=20):
+    def collect_sentences(
+        self,
+        max_words: int = 500,
+        label_word_limit: int = 20,
+        snapshot_dir: str = "/home/dora/Domain-Inference/domain_discover/data_from_wordnet",
+    ):
+        """
+        - words_dict[label]     → 历史最优演进轨迹（每刷新一次就 append 一条）
+        - best_dict[label]      → 始终保存当前“最高 count”的记录
+        - 每 100 个 lemma（word_count % 100 == 10）存一次快照
+        """
+        words_dict      = defaultdict(list)   # 历史
+        best_dict       = {}                  # 当前最佳
+        best_count      = defaultdict(int)
+        word_count      = 0
 
-        words_dict = defaultdict(list)              # 记录每个 label 对应的词
-        best_count_by_label = defaultdict(int)      # 记录每个 label 最好的 count
-        word_count = 0
+        os.makedirs(snapshot_dir, exist_ok=True)
 
         for synset in self.all_synsets[:max_words]:
             for lemma in synset.lemma_names():
-                if word_count % 100 == 0:
-                    print(f"已收集 {word_count} 个词汇")
 
-                # 1. 生成多个句子
-                sentences = self.generate_sentences(lemma)
+                # 0) 进度快照 --------------------------------------------------------
+                if word_count % 100 == 10:
+                    print(f"已评估 {word_count} 个 lemma，保存快照…")
+                    snap_base = f"{self.black_model.model_name}_{word_count}"
+                    with open(f"{snapshot_dir}/words_dict_{snap_base}.json", "w", encoding="utf-8") as f:
+                        json.dump(words_dict, f, ensure_ascii=False, indent=2)
+                    with open(f"{snapshot_dir}/best_dict_{snap_base}.json", "w", encoding="utf-8") as f:
+                        json.dump(best_dict, f, ensure_ascii=False, indent=2)
 
-                # 2. 用 black_box 分类
+                # 1) 生成 & 评价 ------------------------------------------------------
+                sentences = self.generate_sentences(lemma, max_sentences=label_word_limit)
                 majority_label, count, _ = self.evaluate_sentences(sentences)
 
-                # 3. 动态更新逻辑
-                if count > best_count_by_label[majority_label]:
-                    best_count_by_label[majority_label] = count
+                # 2) 是否刷新最佳 ------------------------------------------------------
+                if count > best_count[majority_label]:
+                    best_count[majority_label] = count
 
-                    # 记录 lemma 及其句子
+                    # (a) 更新 words_dict（历史）
                     words_dict[majority_label].append({
                         "lemma": lemma,
-                        "sentences": sentences
+                        "count": count,
+                        "sentences": sentences,
                     })
 
-                    word_count += 1
-                    print(f"更新 label {majority_label} 的最优 count 为 {count}，加入新词：{lemma}")
+                    # (b) 更新 best_dict（当前最佳）
+                    best_dict[majority_label] = {
+                        "lemma": lemma,
+                        "count": count,
+                        "sentences": sentences,
+                    }
 
-                    if all(len(words) > label_word_limit for words in words_dict.values()):
-                        return words_dict
+                    print(f"[label {majority_label}] ✨ 新最优 count={count}, lemma='{lemma}'")
 
-        return words_dict
+                word_count += 1
+
+                # 3) 提前结束：每个 label 已达到阈值 ------------------------------
+                if best_dict and all(
+                    rec["count"] >= label_word_limit for rec in best_dict.values()
+                ):
+                    print("所有 label 均达到目标计数，提前结束。")
+                    return words_dict, best_dict
+
+        return words_dict, best_dict
 
     def save_words(self, words_dict, output_path_txt, output_path_json=None):
         import json
@@ -485,10 +534,8 @@ class WordNetConditioner(nn.Module):
 
             return words_dict
         else:
-            words_dict = self.collect_sentences(max_words=1000, label_word_limit=10)
-
+            words_dict, best_dict = self.collect_sentences(max_words=1000, label_word_limit=20)
             self.save_words(words_dict, f"/home/dora/Domain-Inference/domain_discover/data_from_wordnet/sentence_by_label_{self.black_model.model_name}.txt")
-
             return words_dict
 
 
