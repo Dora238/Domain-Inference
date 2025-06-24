@@ -266,6 +266,181 @@ class T5Generator:
             ) for i in uniq_idx
         ]
         return result
+        
+    # --------------------------------------------------------------------- #
+    # 从给定的hidden state生成文本
+    # --------------------------------------------------------------------- #
+    def generate_from_hidden_state(
+        self,
+        encoder_hidden_states: torch.Tensor,
+        encoder_attention_mask: torch.Tensor = None,
+        *,
+        max_length: int = 64,
+        num_beams: int = 6,
+        num_beam_groups: int = 3,
+        num_return_sequences: int = 3,
+        do_sample: bool = False,
+        temperature: float = 1.0,
+        repetition_penalty: float = 1.2,
+        no_repeat_ngram_size: int = 2,
+        diversity_penalty: float = 3.0,
+        length_penalty: float = 1.0,
+    ) -> List[str]:
+        """
+        从给定的encoder hidden state生成文本，而不是从输入文本开始。
+        这允许我们使用优化过的hidden state来生成特定领域的文本。
+        
+        参数:
+            encoder_hidden_states: 编码器的hidden state，形状为 [batch_size, seq_len, hidden_size]
+            encoder_attention_mask: 编码器的attention mask，形状为 [batch_size, seq_len]
+            max_length: 生成文本的最大长度
+            num_beams: beam search的beam数量
+            num_beam_groups: diverse beam search的组数
+            num_return_sequences: 返回的序列数量
+            do_sample: 是否使用采样
+            temperature: 采样的温度
+            repetition_penalty: 重复惩罚
+            no_repeat_ngram_size: 禁止重复的n-gram大小
+            diversity_penalty: 多样性惩罚
+            length_penalty: 长度惩罚
+            
+        返回:
+            生成的文本列表
+        """
+        if num_return_sequences > num_beams:
+            raise ValueError("num_return_sequences 不能超过 num_beams")
+        if num_beams % num_beam_groups != 0:
+            raise ValueError("num_beams 必须能被 num_beam_groups 整除")
+
+        group_size = num_beams // num_beam_groups
+        
+        # 确保输入形状正确
+        batch_size = encoder_hidden_states.size(0)
+        if batch_size != 1:
+            # 如果有多个batch，只使用第一个
+            encoder_hidden_states = encoder_hidden_states[0:1]
+            if encoder_attention_mask is not None:
+                encoder_attention_mask = encoder_attention_mask[0:1]
+        
+        # 如果没有提供attention mask，创建全为1的mask
+        if encoder_attention_mask is None:
+            encoder_attention_mask = torch.ones(
+                (1, encoder_hidden_states.size(1)),
+                dtype=torch.long, device=encoder_hidden_states.device
+            )
+        
+        # 扩展hidden states和mask到beam size
+        enc_hid = encoder_hidden_states.expand(num_beams, -1, -1).contiguous()
+        enc_mask = encoder_attention_mask.expand(num_beams, -1).contiguous()
+
+        # 初始化beam
+        seqs = torch.full((num_beams, 1), self.start_id,
+                          dtype=torch.long, device=self.device)
+        scores = torch.zeros(num_beams, device=self.device)
+        finished = torch.zeros(num_beams, dtype=torch.bool, device=self.device)
+        past_key_values = None
+
+        # 解码循环
+        for step in range(max_length):
+            cur_in = seqs[:, -1].unsqueeze(-1) if past_key_values is not None else seqs
+            logits, past_key_values = self.decode_step(
+                enc_hid, enc_mask, cur_in, past_key_values
+            )
+            logits = logits[:, -1, :].clone()          # 克隆避免 inplace
+
+            # 限制
+            if repetition_penalty > 1.0:
+                self.apply_repetition_penalty(logits, seqs, repetition_penalty)
+            if no_repeat_ngram_size > 0:
+                mask = self.banned_ngram_mask(seqs, logits.size(-1), no_repeat_ngram_size)
+                logits = logits.masked_fill(mask, -float("inf"))
+
+            # 采样 / 贪婪
+            if do_sample:
+                if temperature != 1.0:
+                    logits = logits / temperature
+                probs = torch.softmax(logits, dim=-1)
+                next_token_scores = torch.log(probs + 1e-10)
+            else:
+                next_token_scores = torch.log_softmax(logits, dim=-1)
+
+            next_scores = scores.unsqueeze(1) + next_token_scores
+            group_view  = next_scores.view(num_beam_groups, group_size, -1)
+
+            # Hamming diverse-beam
+            beam_next_tokens, beam_next_scores, beam_next_indices = [], [], []
+            token_freq = torch.zeros(         # 所有组共享
+                self.model.config.vocab_size,
+                device=self.device, dtype=torch.long
+            )
+
+            for g in range(num_beam_groups):
+                group_scores = group_view[g]
+
+                if diversity_penalty > 0.0 and step > 0:
+                    penalty = diversity_penalty * token_freq.to(group_scores.dtype)
+                    group_scores = group_scores - penalty
+
+                flat = group_scores.view(-1)
+                best_scores, best_idx = torch.topk(flat, k=group_size, dim=0)
+                orig_beam = best_idx // logits.size(-1) + g * group_size
+                next_tok  = best_idx %  logits.size(-1)
+
+                beam_next_tokens.append(next_tok)
+                beam_next_scores.append(best_scores)
+                beam_next_indices.append(orig_beam)
+
+                # 把已选 token 纳入频次，供后续组惩罚
+                token_freq.scatter_add_(0, next_tok, torch.ones_like(next_tok, dtype=torch.long))
+
+            next_tokens = torch.cat(beam_next_tokens,  dim=0)
+            next_scores = torch.cat(beam_next_scores,  dim=0)
+            old_indices = torch.cat(beam_next_indices, dim=0)
+
+            # 更新
+            seqs   = torch.cat([seqs[old_indices], next_tokens.unsqueeze(1)], dim=1)
+            scores = next_scores
+            finished = finished[old_indices] | next_tokens.eq(self.eos_id)
+
+            enc_hid  = enc_hid.index_select(0, old_indices)
+            enc_mask = enc_mask.index_select(0, old_indices)
+            if past_key_values is not None:
+                past_key_values = self.reorder_past(past_key_values, old_indices)
+
+            if finished.all():
+                break
+
+        # 长度惩罚
+        seq_lens = seqs.shape[1] * torch.ones_like(scores)
+        if self.eos_id is not None:
+            for i in range(num_beams):
+                eos_pos = (seqs[i] == self.eos_id).nonzero(as_tuple=True)[0]
+                if eos_pos.numel():
+                    seq_lens[i] = eos_pos[0] + 1
+
+        adj = scores / (((5.0 + seq_lens.float()) / 6.0) ** length_penalty)
+
+        # 结果去重 + 补足
+        uniq_text, uniq_idx = set(), []
+        ranked = torch.topk(adj, k=num_beams).indices.tolist()
+        for idx in ranked:
+            txt = self.tokenizer.decode(
+                seqs[idx, :int(seq_lens[idx])], skip_special_tokens=True
+            )
+            if txt not in uniq_text:
+                uniq_text.add(txt)
+                uniq_idx.append(idx)
+            if len(uniq_idx) == num_return_sequences:
+                break
+        if len(uniq_idx) < num_return_sequences:
+            extra = [i for i in ranked if i not in uniq_idx][: num_return_sequences - len(uniq_idx)]
+            uniq_idx.extend(extra)
+        result = [
+            self.tokenizer.decode(
+                seqs[i, :int(seq_lens[i])], skip_special_tokens=True
+            ) for i in uniq_idx
+        ]
+        return result
 
     # --------------------------------------------------------------------- #
     # baseline：直接调用 HF generate
@@ -346,3 +521,16 @@ if __name__ == "__main__":
         num_return_sequences=3,
     )
     print(*step_by_step, sep="\n")
+    embeddings, attention_mask = gen.encode(text)
+    embdding_res = gen.generate_from_hidden_state(
+        embeddings,
+        attention_mask,
+        max_length=64,
+        num_beams=6, num_beam_groups=3,
+        diversity_penalty=3.0,
+        no_repeat_ngram_size=2,
+        repetition_penalty=1.2,
+        num_return_sequences=3,
+        do_sample=False,
+    )
+    print(*embdding_res, sep="\n")

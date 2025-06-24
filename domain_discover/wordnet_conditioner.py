@@ -24,6 +24,7 @@ from sklearn.metrics import silhouette_score
 import os
 from collections import Counter
 import json
+import re
 
 class WordNetConditioner(nn.Module):
     """Learnable prompt vector for steering text generation.
@@ -50,17 +51,44 @@ class WordNetConditioner(nn.Module):
         visual: bool = False,
         black_model = None,
         initial_sentence_from_wordnet = True,
+        t5_generator = None,
     ):
         super().__init__()
         self.init_method = init_method
         self.black_model = black_model
+        self.t5_generator = t5_generator
         self.visual = visual
         self.initial_sentence_from_wordnet = initial_sentence_from_wordnet
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         if init_method == 'wordnet':
             # 基于WordNet初始化
             self.embeddings_dict, self.embeddings_words_dict = self.initialize_from_wordnet(self.black_model)
-    
+
+    def clean_sentences(self, sentences):
+        cleaned_sentences = []
+        for sent in sentences:
+            sent = sent.strip()
+            # 移除常见前缀
+            prefixes = [
+            "Sentence: ",
+            "Sure, here's a sentence: ",
+            "Here's a sentence: ",
+            "Here is a sentence: ",
+            "I'll create a sentence: "
+        ]
+        
+        for prefix in prefixes:
+            if sent.startswith(prefix):
+                sent = sent[len(prefix):]
+                break
+        
+        # 移除引号
+        if sent.startswith('"') and sent.endswith('"'):
+            sent = sent[1:-1]
+        
+        if sent and sent not in cleaned_sentences:
+            cleaned_sentences.append(sent)
+        return cleaned_sentences
     
     def get_embeddings(self, word_dict, model_name="Bert"):
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -437,7 +465,34 @@ class WordNetConditioner(nn.Module):
         if self.initial_sentence_from_wordnet:
             word_dict = self.traverse_wordnet()
         else:
-            word_dict = self.load_local_wordnet()
+            word_dict = self.load_from_json()
+        for label, entry in word_dict.items():
+            sentences = entry.get('sentences', [])
+            if not sentences:
+                continue
+
+            embeddings = []
+            clean_sentences = self.clean_sentences(sentences)
+            for sent in clean_sentences:
+                with torch.no_grad():
+                    encoder_outputs, attention = self.t5_generator.encode(sent)
+                    hidden_states = encoder_outputs  # [1, L, D]
+                    sent_embed = hidden_states.mean(dim=1).squeeze(0)  # [D]
+                embeddings.append(sent_embed)  # 保持原始 Tensor，不 .cpu().detach()
+
+            if embeddings:
+                embs = torch.stack([x.detach().cpu() for x in embeddings], dim=0)  # [N, D]
+                center = embs.mean(dim=0, keepdim=True)                            # [1, D]
+                distances = torch.norm(embs - center, dim=1)                       # [N]
+                closest_idx = torch.argmin(distances).item()
+
+                # 从原始 embeddings 中取值（未 detach）
+                closest_embedding = embeddings[closest_idx]
+
+                word_dict[label]['center_sentence'] = sentences[closest_idx]
+                word_dict[label]['embedding_center'] = closest_embedding  # 原始 tensor，未转 list
+
+        self.word_dict = word_dict
         pca_visual = self.visual
 
         if pca_visual:
@@ -451,6 +506,29 @@ class WordNetConditioner(nn.Module):
         else:
             return None, word_dict
     
+
+    def load_from_json(self):
+        # 获取所有符合模式的文件名
+        snapshot_dir = "/home/dora/Domain-Inference/domain_discover/data_from_wordnet"
+        pattern = re.compile(rf"best_dict_{re.escape(self.black_model.model_name)}_(\d+)\.json")
+        max_word_count = -1
+        best_file = None
+
+        for fname in os.listdir(snapshot_dir):
+            match = pattern.match(fname)
+            if match:
+                word_count = int(match.group(1))
+                if word_count > max_word_count:
+                    max_word_count = word_count
+                    best_file = fname
+
+        if best_file is None:
+            raise FileNotFoundError(f"No matching best_dict_*.json found for model {self.black_model.model_name} in {snapshot_dir}")
+
+        json_path = os.path.join(snapshot_dir, best_file)
+        with open(json_path, "r", encoding="utf-8") as f:
+            word_dict = json.load(f)
+        return word_dict
 
     def load_local_wordnet(txt_path="/home/dora/Domain-Inference/domain_discover/data_from_wordnet/words_by_label.txt"):
 
@@ -536,6 +614,8 @@ class WordNetConditioner(nn.Module):
         else:
             words_dict, best_dict = self.collect_sentences(max_words=1000, label_word_limit=20)
             self.save_words(words_dict, f"/home/dora/Domain-Inference/domain_discover/data_from_wordnet/sentence_by_label_{self.black_model.model_name}.txt")
+            best_dict_path = f"/home/dora/Domain-Inference/domain_discover/data_from_wordnet/best_dict_{self.black_model.model_name}_final.json"
+            self.save_words(best_dict, best_dict_path)
             return words_dict
 
 
