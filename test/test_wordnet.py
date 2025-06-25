@@ -10,11 +10,9 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, GPT2Tokenizer, GPT
 from wordnet_conditioner import WordNetConditioner
 from diffusion import DiffusionTextGenerator
 from blackbox import BlackBox
-from pipeline import optimise_prompt_vector
-from optimizer import optimize_x_start, calculate_diversity
+from optimizer import ExpansionDirectionOptimizer
 from collections import OrderedDict
 
-# Import DiffuSeq utilities
 import sys
 
 # 确保DiffuSeq在路径中

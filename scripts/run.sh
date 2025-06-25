@@ -1,0 +1,11 @@
+python cli.py --blackbox_model_name "j-hartmann/emotion-english-distilroberta-base"
+python cli.py --blackbox_model_name "s-nlp/roberta_toxicity_classifier"
+python cli.py --blackbox_model_name "nlptown/bert-base-multilingual-uncased-sentiment"
+python cli.py --blackbox_model_name "mrm8488/bert-tiny-finetuned-sms-spam-detection"
+python cli.py --blackbox_model_name "skandavivek2/spam-classifier"
+python cli.py --blackbox_model_name "wesleyacheng/sms-spam-classification-with-bert"
+python cli.py --blackbox_model_name "jackhhao/jailbreak-classifier"
+python cli.py --blackbox_model_name "lordofthejars/jailbreak-classifier"
+python cli.py --blackbox_model_name "Necent/distilbert-base-uncased-detected-jailbreak"
+python cli.py --blackbox_model_name "hallisky/sarcasm-classifier-gpt4-data"
+
