@@ -72,7 +72,7 @@ class BlackBox:
         outputs = self.model(**inputs)
         predictions = torch.argmax(outputs.logits, dim=1)
         
-        return predictions.tolist()
+        return predictions.tolist()[0]
             
 
 
