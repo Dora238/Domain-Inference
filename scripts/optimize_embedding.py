@@ -17,6 +17,17 @@ from domain_infer.classifier import Classifier
 from domain_infer.optimizer import ExpansionDirectionOptimizer
 from domain_infer.generater import T5Generator
 
+'''
+TODO (YG): 
+1. Run this code to see if it works.
+2. Experiment on alpha estimation fluctuation.
+3. Experiment on sentence/embedding improvements.
+
+TODO (DMY):
+1. Write method section. 
+'''
+
+# NOTE: After having embeddings with largest alpha, what is the domain concept?
 
 def create_argparser():
     

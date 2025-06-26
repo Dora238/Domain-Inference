@@ -3,6 +3,12 @@ import torch.nn as nn
 import torch.nn.functional as F
 from typing import Optional, Tuple
 from tqdm import tqdm
+
+# NOTE: Avoid using Greek letters.
+
+# NOTE: Why use NN to generate expansion directions?
+# 1. Is it chosen for parallalization?
+# 2. Is it trained in future?
 class MultiExpansion(nn.Module):
     def __init__(self, hidden_size=768, hidden_factor=2, num_directions=50, dropout_p=0.0):
         """
@@ -52,6 +58,7 @@ class MultiExpansion(nn.Module):
 
 
 
+# NOTE: What if best alpha is larger than alpha_max? 
 class ExpansionDirectionOptimizer:
     """
     ① 内层：在固定 Z 上二分搜索 α，使 ≥ η 比例方向保持 target_label。
@@ -167,6 +174,7 @@ class ExpansionDirectionOptimizer:
                     failed_now[i] = True         # 双向都失败
 
             ratio = success_cnt / n
+            # NOTE: Would ratio fluctuates too much in repeting experiments?
             if ratio >= self.eta:                # 合格 → 加大 alpha
                 best_alpha  = mid_alpha
                 best_signed = signed_now.clone()

@@ -2,7 +2,7 @@
 name = "domain"
 version = "0.1.0"
 description = "Simplified environment from environment.yml"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.13"
 
 dependencies = [
     # Interactive and Jupyter
@@ -31,7 +31,7 @@ dependencies = [
     "torch==2.0.1",
     "torchvision==0.15.2",
     "torchaudio==2.0.2",
-    "transformers>=4.32.0,<5.0.0",  # ✅ upgraded to resolve conflict
+    "transformers>=4.32.0,<5.0.0", 
     "sentence-transformers==2.6.1",
     "tokenizers==0.19.1",
     "safetensors",
