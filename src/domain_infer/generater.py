@@ -490,7 +490,7 @@ class T5Generator:
 if __name__ == "__main__":
     cfg = {
         "model_name": "humarin/chatgpt_paraphraser_on_T5_base",
-        "peft_model_path": "/home/dora/Domain-Inference/domain_discover/prefix_paraphraser/checkpoint-65500",
+        "peft_model_path": 'Dora238/prefix_paraphraser',
         "device": "cuda" if torch.cuda.is_available() else "cpu",
     }
     gen = T5Generator(**cfg)

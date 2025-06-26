@@ -29,7 +29,7 @@ CONFIG: Dict[str, object] = {
     "epochs": 2,
     "warmup": 1000,
     "out": "./prefix_paraphraser",
-    "infer_model": "/home/dora/Domain-Inference/domain_discover/prefix_paraphraser/checkpoint-65500",
+    "infer_model": f'Dora238/prefix-paraphraser',
     "device": "cuda" if torch.cuda.is_available() else "cpu",
 }
 

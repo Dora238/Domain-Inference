@@ -9,51 +9,11 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, GPT2Tokenizer, GPT
 
 from wordnet_conditioner import WordNetConditioner
 from diffusion import DiffusionTextGenerator
-from blackbox import BlackBox
+from classifier import Classifier
 from optimizer import ExpansionDirectionOptimizer
 from collections import OrderedDict
 
 import sys
-
-# 确保DiffuSeq在路径中
-def setup_diffuseq_path():
-    """确保DiffuSeq路径正确添加到sys.path中"""
-    # 尝试多种可能的路径
-    possible_paths = [
-        Path(__file__).parent.parent / 'DiffuSeq',
-        Path(__file__).parent.parent / 'DiffuSeq' / 'DiffuSeq',
-        Path('/home/dora/Domain-Inference/DiffuSeq'),
-        Path('/home/dora/Domain-Inference/DiffuSeq/DiffuSeq')
-    ]
-    
-    for path in possible_paths:
-        if (path / 'diffuseq').exists():
-            path_str = str(path)
-            if path_str not in sys.path:
-                sys.path.insert(0, path_str)
-            return True
-            
-    return False
-
-# 设置路径
-if not setup_diffuseq_path():
-    print("警告：无法找到DiffuSeq路径，请确保DiffuSeq已正确安装")
-
-# 导入DiffuSeq工具
-try:
-    from basic_utils import add_dict_to_argparser, load_defaults_config
-except ImportError:
-    print("错误：无法导入DiffuSeq工具，请检查DiffuSeq安装路径")
-    
-    # 提供简单的替代函数，以防导入失败
-    def add_dict_to_argparser(parser, default_dict):
-        for k, v in default_dict.items():
-            v_type = type(v)
-            parser.add_argument(f"--{k}", default=v, type=v_type)
-            
-    def load_defaults_config():
-        return {"hidden_dim": 128, "seq_len": 128}
-
 
 def create_argparser():
     # 基础参数
@@ -97,7 +57,7 @@ def create_argparser():
     # 添加基本参数
     parser.batch_size = 1
     parser.add_argument(
-        "--blackbox_model_name",
+        "--classifier_name",
         type=str,
         # required=True,
         default="s-nlp/roberta_toxicity_classifier",
@@ -168,11 +128,11 @@ def run_domain_discovery(args):
     """运行域发现管道"""
     # Setup device
 
-    blackbox_model_names = ["j-hartmann/emotion-english-distilroberta-base", "s-nlp/roberta_toxicity_classifier",
+    classifier_names = ["j-hartmann/emotion-english-distilroberta-base", "s-nlp/roberta_toxicity_classifier",
                             "nlptown/bert-base-multilingual-uncased-sentiment","mrm8488/bert-tiny-finetuned-sms-spam-detection",
                             "skandavivek2/spam-classifier","wesleyacheng/sms-spam-classification-with-bert","jackhhao/jailbreak-classifier",
                             "lordofthejars/jailbreak-classifier","Necent/distilbert-base-uncased-detected-jailbreak","hallisky/sarcasm-classifier-gpt4-data"]
-    for blackbox_model_name in blackbox_model_names:
+    for classifier_name in classifier_names:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print(f"Using device: {device}")
     
@@ -197,13 +157,13 @@ def run_domain_discovery(args):
             rank=0
         )
         
-        black_box = BlackBox(model_name=blackbox_model_name)
+        classifier = Classifier(model_name=classifier_name)
         
         # 获取模型的hidden_dim
         hidden_dim = generator.config.get("hidden_dim", 128)
         print(f"Using hidden_dim: {hidden_dim}")
         
-        wordnet_conditioner = WordNetConditioner(hidden_dim=hidden_dim, init_method='wordnet', black_model=black_box, max_words=5000, min_words_per_category=20, visual=True).to(device)
+        wordnet_conditioner = WordNetConditioner(hidden_dim=hidden_dim, init_method='wordnet', classifier=classifier, max_words=5000, min_words_per_category=20, visual=True).to(device)
         # for label, words in wordnet_conditioner.word_dict.items():
         #     print(f"Label: {label}")
         #     print(f"Words: {words}")

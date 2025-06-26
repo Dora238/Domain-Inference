@@ -9,7 +9,7 @@ from transformers.pipelines.object_detection import Predictions
 
 
 @dataclass
-class BlackBox:
+class Classifier:
     """Wrapper for HuggingFace classifier models that returns hard labels.
     
     This class provides a unified interface to multiple pre-trained classifiers
@@ -78,7 +78,7 @@ class BlackBox:
 
 if __name__ == "__main__":
     # 简单的单元测试
-    bb = BlackBox("j-hartmann/emotion-english-distilroberta-base")
+    bb = Classifier("j-hartmann/emotion-english-distilroberta-base")
     test_texts = [
         "I feel happy today!",
         "This makes me sad."

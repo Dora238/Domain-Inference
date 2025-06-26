@@ -64,7 +64,7 @@ class ExpansionDirectionOptimizer:
     # ------------------------- init --------------------------
     def __init__(self,
                  decoder,                   # exposes generate_from_hidden_state(Z) -> [str]
-                 black_box,                 # exposes predict(text) -> int
+                 classifier,                 # exposes predict(text) -> int
                 #  target_label: int,
                  expansion_module: Optional[nn.Module] = None,
                  eta: float = 0.9,
@@ -77,7 +77,7 @@ class ExpansionDirectionOptimizer:
 
         self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
         self.decoder      = decoder
-        self.black_box    = black_box
+        self.classifier    = classifier
         # self.target_label = int(target_label)
 
         self.eta              = eta
@@ -125,7 +125,7 @@ class ExpansionDirectionOptimizer:
         for seq_batch in seqs:        # 两次 (+α, -α)
             vote = 0
             for out in seq_batch:
-                pred = self.black_box.predict(out)
+                pred = self.classifier.predict(out)
                 vote += int(pred == target_label)
             results.append((vote / self.num_beams) >= self.eta)
         return results[0], results[1]

@@ -9,7 +9,7 @@ import nltk
 import random
 from collections import defaultdict
 from pathlib import Path
-from blackbox import BlackBox
+from domain_infer.classifier import Classifier
 from sklearn.cluster import KMeans
 from sklearn.metrics import pairwise_distances_argmin_min
 from sentence_transformers import SentenceTransformer
@@ -49,20 +49,22 @@ class WordNetConditioner(nn.Module):
         max_words: int = 5000,
         min_words_per_category: int = 20,
         visual: bool = False,
-        black_model = None,
+        classifier = None,
         initial_sentence_from_wordnet = True,
         t5_generator = None,
     ):
         super().__init__()
         self.init_method = init_method
-        self.black_model = black_model
+        self.classifier = classifier
         self.t5_generator = t5_generator
         self.visual = visual
         self.initial_sentence_from_wordnet = initial_sentence_from_wordnet
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        self.load_initial_path = f'{self.project_root}/data/initial_from_wordnet'
         if init_method == 'wordnet':
             # 基于WordNet初始化
-            self.embeddings_dict, self.embeddings_words_dict = self.initialize_from_wordnet(self.black_model)
+            self.embeddings_dict, self.embeddings_words_dict = self.initialize_from_wordnet(self.classifier)
 
     def clean_sentences(self, sentences):
         cleaned_sentences = []
@@ -236,7 +238,7 @@ class WordNetConditioner(nn.Module):
         plt.ylabel("PC2")
         plt.legend()
         plt.grid(True)
-        plt.savefig(f"/home/dora/Domain-Inference/domain_discover/output/{model_name}_wordnet_pca_2d_{self.black_model.model_name}.png")
+        plt.savefig(f"{self.project_root}/output/visual_word_embedding/{model_name}_wordnet_pca_2d_{self.classifier.model_name}.png")
         plt.show()
 
         # ========== 3D PCA ==========
@@ -252,7 +254,7 @@ class WordNetConditioner(nn.Module):
         ax.set_ylabel("PC2")
         ax.set_zlabel("PC3")
         ax.legend()
-        plt.savefig(f"/home/dora/Domain-Inference/domain_discover/output/{model_name}_wordnet_pca_3d_{self.black_model.model_name}.png")
+        plt.savefig(f"{self.project_root}/output/visual_word_embedding/{model_name}_wordnet_pca_3d_{self.classifier.model_name}.png")
         plt.show()
 
         # ========== t-SNE (2D) ← 先 PCA50 ==========
@@ -269,7 +271,7 @@ class WordNetConditioner(nn.Module):
         plt.ylabel("Dim 2")
         plt.legend()
         plt.grid(True)
-        plt.savefig(f"/home/dora/Domain-Inference/domain_discover/output/{model_name}_wordnet_tsne_2d_{self.black_model.model_name}.png")
+        plt.savefig(f"{self.project_root}/output/visual_word_embedding/{model_name}_wordnet_tsne_2d_{self.classifier.model_name}.png")
         plt.show()
 
         # ========== t-SNE (3D) ← 先 PCA50 ==========
@@ -285,7 +287,7 @@ class WordNetConditioner(nn.Module):
         ax.set_ylabel("Dim 2")
         ax.set_zlabel("Dim 3")
         ax.legend()
-        plt.savefig(f"/home/dora/Domain-Inference/domain_discover/output/{model_name}_wordnet_tsne_3d_{self.black_model.model_name}.png")
+        plt.savefig(f"{self.project_root}/output/visual_word_embedding/{model_name}_wordnet_tsne_3d_{self.classifier.model_name}.png")
         plt.show()
 
         return model_name, score
@@ -312,24 +314,9 @@ class WordNetConditioner(nn.Module):
         sentences = [full_output.replace(prompt.strip(), "").strip() for full_output in full_output]
         sentences = [s for s in sentences if s] 
         return sentences
-        # for _ in range(max_sentences):
-        #     inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
-        #     output_ids = self.model.generate(
-        #         **inputs,
-        #         max_length=64,
-        #         temperature=0.8,
-        #         top_p=0.95,
-        #         do_sample=True,
-        #         pad_token_id=self.tokenizer.eos_token_id
-        #     )
-        #     full_output = self.tokenizer.decode(output_ids[0], skip_special_tokens=True).strip()
-        #     sentence = full_output.replace(prompt.strip(), "").strip()
-        #     if sentence:
-        #         sentences.append(sentence)
-        # return sentences
 
     def evaluate_sentences(self, sentences):
-        labels = [self.black_model.predict([s])[0] for s in sentences]
+        labels = [self.classifier.predict([s])[0] for s in sentences]
         counter = Counter(labels)
         majority_label, count = counter.most_common(1)[0]
         return majority_label, count, labels
@@ -373,7 +360,6 @@ class WordNetConditioner(nn.Module):
         self,
         max_words: int = 500,
         label_word_limit: int = 20,
-        snapshot_dir: str = "/home/dora/Domain-Inference/domain_discover/data_from_wordnet",
     ):
         """
         - words_dict[label]     → 历史最优演进轨迹（每刷新一次就 append 一条）
@@ -385,7 +371,7 @@ class WordNetConditioner(nn.Module):
         best_count      = defaultdict(int)
         word_count      = 0
 
-        os.makedirs(snapshot_dir, exist_ok=True)
+        os.makedirs(self.load_initial_path, exist_ok=True)
 
         for synset in self.all_synsets[:max_words]:
             for lemma in synset.lemma_names():
@@ -393,10 +379,10 @@ class WordNetConditioner(nn.Module):
                 # 0) 进度快照 --------------------------------------------------------
                 if word_count % 100 == 10:
                     print(f"已评估 {word_count} 个 lemma，保存快照…")
-                    snap_base = f"{self.black_model.model_name}_{word_count}"
-                    with open(f"{snapshot_dir}/words_dict_{snap_base}.json", "w", encoding="utf-8") as f:
+                    snap_base = f"{self.classifier.model_name}_{word_count}"
+                    with open(f"{self.load_initial_path}/words_dict_{snap_base}.json", "w", encoding="utf-8") as f:
                         json.dump(words_dict, f, ensure_ascii=False, indent=2)
-                    with open(f"{snapshot_dir}/best_dict_{snap_base}.json", "w", encoding="utf-8") as f:
+                    with open(f"{self.load_initial_path}/best_dict_{snap_base}.json", "w", encoding="utf-8") as f:
                         json.dump(best_dict, f, ensure_ascii=False, indent=2)
 
                 # 1) 生成 & 评价 ------------------------------------------------------
@@ -453,12 +439,12 @@ class WordNetConditioner(nn.Module):
             with open(output_path_json, "w", encoding="utf-8") as f_json:
                 json.dump(words_dict, f_json, ensure_ascii=False, indent=2)
     
-    def initialize_from_wordnet(self, black_model=None) -> None:
+    def initialize_from_wordnet(self, classifier=None) -> None:
         """
         从WordNet词汇初始化prompt vector，保留每个label下每个聚类中心最靠近的词。
         
         Args:
-            black_model: 可选的黑盒模型，用于辅助选择词汇。
+            classifier: 可选的黑盒模型，用于辅助选择词汇。
         Returns:
             word_dict: 每个label下的词汇列表
         """
@@ -509,12 +495,11 @@ class WordNetConditioner(nn.Module):
 
     def load_from_json(self):
         # 获取所有符合模式的文件名
-        snapshot_dir = "/home/dora/Domain-Inference/domain_discover/data_from_wordnet"
-        pattern = re.compile(rf"best_dict_{re.escape(self.black_model.model_name)}_(\d+)\.json")
+        pattern = re.compile(rf"best_dict_{re.escape(self.classifier.model_name)}_(\d+)\.json")
         max_word_count = -1
         best_file = None
 
-        for fname in os.listdir(snapshot_dir):
+        for fname in os.listdir(self.load_initial_path):
             match = pattern.match(fname)
             if match:
                 word_count = int(match.group(1))
@@ -523,15 +508,15 @@ class WordNetConditioner(nn.Module):
                     best_file = fname
 
         if best_file is None:
-            raise FileNotFoundError(f"No matching best_dict_*.json found for model {self.black_model.model_name} in {snapshot_dir}")
+            raise FileNotFoundError(f"No matching best_dict_*.json found for model {self.classifier.model_name} in {self.load_initial_path}")
 
-        json_path = os.path.join(snapshot_dir, best_file)
+        json_path = os.path.join(self.load_initial_path, best_file)
         with open(json_path, "r", encoding="utf-8") as f:
             word_dict = json.load(f)
         return word_dict
 
-    def load_local_wordnet(txt_path="/home/dora/Domain-Inference/domain_discover/data_from_wordnet/words_by_label.txt"):
-
+    def load_local_wordnet(self):
+        txt_path=f'{self.load_initial_path}/words_by_label.txt'
         words_dict = defaultdict(list)
         current_label = None
         current_lemma = None
@@ -608,13 +593,13 @@ class WordNetConditioner(nn.Module):
                 max_words=1000,
                 label_word_limit=10
             )
-            self.save_words(words_dict, f"/home/dora/Domain-Inference/domain_discover/data_from_wordnet/words_by_label_{self.black_model.model_name}.txt")
+            self.save_words(words_dict, f"{self.load_initial_path}/words_by_label_{self.classifier.model_name}.txt")
 
             return words_dict
         else:
             words_dict, best_dict = self.collect_sentences(max_words=1000, label_word_limit=20)
-            self.save_words(words_dict, f"/home/dora/Domain-Inference/domain_discover/data_from_wordnet/sentence_by_label_{self.black_model.model_name}.txt")
-            best_dict_path = f"/home/dora/Domain-Inference/domain_discover/data_from_wordnet/best_dict_{self.black_model.model_name}_final.json"
+            self.save_words(words_dict, f"{self.load_initial_path}/sentence_by_label_{self.classifier.model_name}.txt")
+            best_dict_path = f"{self.load_initial_path}/best_dict_{self.classifier.model_name}_final.json"
             self.save_words(best_dict, best_dict_path)
             return words_dict
 
@@ -623,10 +608,11 @@ if __name__ == "__main__":
 
     # 测试随机初始化
     print("\n测试随机初始化...")
-    black_model = BlackBox("j-hartmann/emotion-english-distilroberta-base")
-    prompt = WordNetConditioner(hidden_dim=128, init_method='wordnet', black_model=black_model)  # 修改为与 diffusion 模型匹配的维度
+    classifier = Classifier("j-hartmann/emotion-english-distilroberta-base")
+    prompt = WordNetConditioner(hidden_dim=128, init_method='wordnet', classifier=classifier)  # 修改为与 diffusion 模型匹配的维度
     embeddings_dict = prompt.embeddings_dict
     words_dict = prompt.embeddings_words_dict
+    
     # print(embeddings_dict)
     print(words_dict)
     

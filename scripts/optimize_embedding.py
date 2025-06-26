@@ -1,14 +1,22 @@
 """Command-line interface for domain discovery pipeline."""
 
 import argparse
-from pathlib import Path
 import torch
-from wordnet_conditioner import WordNetConditioner
-from blackbox import BlackBox
-from optimizer import ExpansionDirectionOptimizer
-from generater_T5 import T5Generator
 from collections import OrderedDict
 from tqdm import tqdm
+
+import sys
+from pathlib import Path
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+SRC_PATH = PROJECT_ROOT / "src"
+sys.path.append(str(PROJECT_ROOT))
+if str(SRC_PATH) not in sys.path:
+    sys.path.insert(0, str(SRC_PATH))
+from domain_infer.wordnet_init import WordNetConditioner
+from domain_infer.classifier import Classifier
+from domain_infer.optimizer import ExpansionDirectionOptimizer
+from domain_infer.generater import T5Generator
+
 
 def create_argparser():
     
@@ -16,8 +24,8 @@ def create_argparser():
     parser = argparse.ArgumentParser(description="Domain Discovery Pipeline")
     
     # 添加基本参数
-    parser.add_argument("--blackbox_model_name", type=str, default="j-hartmann/emotion-english-distilroberta-base", help="HuggingFace model name for black-box classifier,s-nlp/roberta_toxicity_classifier,j-hartmann/emotion-english-distilroberta-base, nlptown/bert-base-multilingual-uncased-sentiment")
-    parser.add_argument("--output_dir", type=str, default='/home/dora/Domain-Inference/domain_discover/output', help="Directory to save results")
+    parser.add_argument("--classifier_name", type=str, default="j-hartmann/emotion-english-distilroberta-base", help="HuggingFace model name for black-box classifier,s-nlp/roberta_toxicity_classifier,j-hartmann/emotion-english-distilroberta-base, nlptown/bert-base-multilingual-uncased-sentiment")
+    parser.add_argument("--output_dir", type=str, default=f'{PROJECT_ROOT}/output', help="Directory to save results")
     
     # 添加x_start优化相关参数
     parser.add_argument("--target_success_rate", type=float, default=0.9, help="目标成功率阈值，范围[0,1]，表示black_box返回1的比例")
@@ -30,7 +38,7 @@ def create_argparser():
 def load_generator():
     cfg = {
         "model_name": "humarin/chatgpt_paraphraser_on_T5_base",
-        "peft_model_path": "/home/dora/Domain-Inference/domain_discover/prefix_paraphraser/checkpoint-65500",
+        "peft_model_path": "Dora238/prefix-paraphraser",
         "device": "cuda" if torch.cuda.is_available() else "cpu",
     }
     gen = T5Generator(**cfg)
@@ -47,12 +55,12 @@ def run_domain_discovery(args):
     output_dir.mkdir(parents=True, exist_ok=True)
     
     # Initialize components
-    black_box = BlackBox(model_name=args.blackbox_model_name)
+    classifier = Classifier(model_name=args.classifier_name)
     t5_generator = load_generator()
-    optimizer = ExpansionDirectionOptimizer(decoder=t5_generator, black_box=black_box, eta=args.target_success_rate)
+    optimizer = ExpansionDirectionOptimizer(decoder=t5_generator, classifier=classifier, eta=args.target_success_rate)
 
     # Load WordNet conditioner
-    wordnet_conditioner = WordNetConditioner(init_method='wordnet', black_model=black_box, max_words=5000, min_words_per_category=20, initial_sentence_from_wordnet=False, t5_generator=t5_generator).to(device)
+    wordnet_conditioner = WordNetConditioner(init_method='wordnet', classifier=classifier, max_words=5000, min_words_per_category=20, initial_sentence_from_wordnet=False, t5_generator=t5_generator).to(device)
     word_dict = wordnet_conditioner.word_dict
     word_dict = OrderedDict(sorted(word_dict.items()))
     best_embeddings = []

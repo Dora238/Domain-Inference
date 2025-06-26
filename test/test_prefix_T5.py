@@ -9,9 +9,7 @@ import numpy as np
 from sklearn.metrics import silhouette_score, pairwise_distances, accuracy_score, precision_recall_fscore_support
 from scipy.spatial.distance import pdist, squareform
 from scipy.stats import ttest_ind
-from generater_T5 import T5Generator
-import json
-import os
+from generater import T5Generator
 import pandas as pd
 # 设置 device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -23,7 +21,7 @@ spam_model = AutoModelForSequenceClassification.from_pretrained(spam_model_name)
 
 cfg = {
     "model_name": "humarin/chatgpt_paraphraser_on_T5_base",
-    "peft_model_path": "/home/dora/Domain-Inference/domain_discover/prefix_paraphraser/checkpoint-65500",
+    "peft_model_path": "Dora238/prefix_paraphraser",
     "device": "cuda" if torch.cuda.is_available() else "cpu",
 }
 t5_model = T5Generator(**cfg)
