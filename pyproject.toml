@@ -1,0 +1,84 @@
+[project]
+name = "domain"
+version = "0.1.0"
+description = "Simplified environment from environment.yml"
+requires-python = ">=3.11"
+
+dependencies = [
+    # Interactive and Jupyter
+    "ipykernel",
+    "ipython",
+    "jupyter-client",
+    "jupyter-core",
+    "matplotlib-inline",
+
+    # Core utilities
+    "debugpy",
+    "psutil",
+    "pyzmq",
+    "setuptools",
+    "pip",
+    "traitlets",
+    "typing-extensions",
+    "wheel",
+
+    # ML ecosystem
+    "accelerate",
+    "datasets",
+    "evaluate",
+    "scikit-learn",
+    "scipy",
+    "torch==2.0.1",
+    "torchvision==0.15.2",
+    "torchaudio==2.0.2",
+    "transformers>=4.32.0,<5.0.0",  # ✅ upgraded to resolve conflict
+    "sentence-transformers==2.6.1",
+    "tokenizers==0.19.1",
+    "safetensors",
+    "peft==0.6.2",
+    "nvidia-cublas-cu11",
+    "nvidia-cudnn-cu11",
+
+    # NLP and spaCy
+    "spacy==3.8.7",
+    "spacy-legacy",
+    "srsly",
+    "thinc",
+
+    # Visualization
+    "matplotlib",
+    "tqdm",
+    "rich",
+
+    # Data handling
+    "pandas",
+    "numpy<2",
+    "pyarrow",
+    "pyarrow-hotfix",
+    "protobuf",
+    "pydantic",
+    "pydantic-core",
+    "pytz",
+    "pyyaml",
+
+    # Networking and I/O
+    "aiohttp",
+    "requests",
+    "urllib3",
+    "huggingface-hub",
+    "filelock",
+    "cloudpathlib",
+
+    # BLEU/metrics
+    "sacrebleu",
+    "bert-score",
+
+    # Misc
+    "markdown-it-py",
+    "sentencepiece==0.2.0",
+    "langcodes",
+    "wrapt",
+    "cmake",
+    "lit",
+    "click"
+]
