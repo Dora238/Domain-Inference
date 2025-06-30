@@ -74,7 +74,8 @@ class Classifier:
         
         return predictions.tolist()[0]
             
-
+    def get_all_labels(self):
+        return list(range(self.num_labels))
 
 if __name__ == "__main__":
     # 简单的单元测试

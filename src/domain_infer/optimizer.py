@@ -61,10 +61,10 @@ class MultiExpansion(nn.Module):
 # NOTE: What if best alpha is larger than alpha_max? 
 class ExpansionDirectionOptimizer:
     """
-    ① 内层：在固定 Z 上二分搜索 α，使 ≥ η 比例方向保持 target_label。
-       - 同时测试 ±α·Δ，若 –α 成功则反转 Δ 的符号。
+    ① 内层：在固定 Z 上二分搜索 alpha，使 ≥ η 比例方向保持 target_label。
+       - 同时测试 ±alpha·Δ，若 –alpha 成功则反转 Δ 的符号。
     ② 外层：若仍有失败方向，则沿 “失败方向均值的反向” 微调 Z，
-       不断抬高可行的最大 α。
+       不断抬高可行的最大 alpha。
     整个过程仅依赖 hard-label black-box + decoder.generate。
     """
 
@@ -100,7 +100,7 @@ class ExpansionDirectionOptimizer:
         self.expansion_module.eval()
 
     # ========================================================
-    # --------- 1. 评估单个方向是否成功 (±α) -------------------
+    # --------- 1. 评估单个方向是否成功 (±alpha) -------------------
     @torch.no_grad()
     def _dir_success(self, Z: torch.Tensor, d: torch.Tensor, alpha: float, target_label: int) -> Tuple[bool, bool]:
         """
@@ -108,7 +108,7 @@ class ExpansionDirectionOptimizer:
         """
         # seqs是包含label 0和1的的样本
         seqs = []
-        # +α
+        # +alpha
         self.num_beams=4
         seqs.append(
             self.decoder.generate_from_hidden_state(
@@ -118,7 +118,7 @@ class ExpansionDirectionOptimizer:
                 num_beam_groups      = max(1, self.num_beams // 2),
             )
         )
-        # –α
+        # –alpha
         seqs.append(
             self.decoder.generate_from_hidden_state(
                 (Z - alpha * d).unsqueeze(0),
@@ -129,7 +129,7 @@ class ExpansionDirectionOptimizer:
         )
 
         results = []
-        for seq_batch in seqs:        # 两次 (+α, -α)
+        for seq_batch in seqs:        # 两次 (+alpha, -alpha)
             vote = 0
             for out in seq_batch:
                 pred = self.classifier.predict(out)
@@ -137,14 +137,14 @@ class ExpansionDirectionOptimizer:
             results.append((vote / self.num_beams) >= self.eta)
         return results[0], results[1]
 
-    # --------- 2. 二分 α（带符号翻转 + 失败掩码）-------------
+    # --------- 2. 二分 alpha（带符号翻转 + 失败掩码）-------------
     @torch.no_grad()
     def _binary_search_alpha(self, Z: torch.Tensor, directions: torch.Tensor, target_label: int
                              ) -> Tuple[float, torch.Tensor, torch.Tensor]:
         """
         返回：
-            best_alpha                 (float, -1 若 α_min 也失败)
-            signed_dirs  (n,L,D)       —— 若 –α 成功，则已取 -d
+            best_alpha                 (float, -1 若 alpha_min 也失败)
+            signed_dirs  (n,L,D)       —— 若 –alpha 成功，则已取 -d
             failed_mask  (n,) bool     —— 在 best_alpha 上仍失败的方向
         """
         n, L, _ = directions.shape
@@ -161,7 +161,7 @@ class ExpansionDirectionOptimizer:
             signed_now  = directions.clone()   # 每轮临时
             failed_now  = torch.zeros(n, dtype=torch.bool, device=Z.device)
 
-            # ---- 逐方向评估 (+α / -α) ----------------------
+            # ---- 逐方向评估 (+alpha / -alpha) ----------------------
             for i in range(n):
                 plus_ok, minus_ok = self._dir_success(Z, directions[i], mid_alpha, target_label)
 
@@ -200,16 +200,16 @@ class ExpansionDirectionOptimizer:
                  ) -> Tuple[float, float, torch.Tensor]:
         """
         返回：
-            alpha_raw, alpha_scaled (= α/√L), signed_dirs
+            alpha_raw, alpha_scaled (= alpha/√L), signed_dirs
         """
         Z_best   = Z_init.squeeze(0).to(self.device).clone()
         gamma    = gamma_init
 
         # 初始方向
         dirs_best = self.expansion_module(Z_best)
-        α_best, signed_best, failed_best = self._binary_search_alpha(Z_best, dirs_best, target_label)
+        alpha_best, signed_best, failed_best = self._binary_search_alpha(Z_best, dirs_best, target_label)
 
-        if α_best < 0:                       # α_min 都失败
+        if alpha_best < 0:                       # alpha_min 都失败
             return -1.0, -1.0, signed_best
         expansion_dir = None
         # ------------ 外层迭代:优化偏倚步长 ------------------------------
@@ -226,18 +226,18 @@ class ExpansionDirectionOptimizer:
             # 2) 反向位移
             Z_cand = Z_best - gamma * mean_fail
 
-            # 3) 在新 Z 上重新生成方向并二分 α
+            # 3) 在新 Z 上重新生成方向并二分 alpha
             dirs_cand = self.expansion_module(Z_cand)
-            α_cand, signed_cand, failed_cand = self._binary_search_alpha(Z_cand, dirs_cand, target_label)
+            alpha_cand, signed_cand, failed_cand = self._binary_search_alpha(Z_cand, dirs_cand, target_label)
 
             # 4) 接受-拒绝 + 步长自适应
-            if α_cand > α_best + tol:
-                Z_best, α_best = Z_cand, α_cand
+            if alpha_cand > alpha_best + tol:
+                Z_best, alpha_best = Z_cand, alpha_cand
                 signed_best, failed_best = signed_cand, failed_cand
                 gamma *= 1.2     # 放大步长
                 expansion_dir = dirs_cand
             else:
                 gamma *= 0.6     # 缩小步长
-        print(f"Best alpha: {α_best}")
+        print(f"Best alpha: {alpha_best}")
         print(f"Best embedding: {Z_best}")
-        return α_best, Z_best, expansion_dir
+        return alpha_best, Z_best, expansion_dir

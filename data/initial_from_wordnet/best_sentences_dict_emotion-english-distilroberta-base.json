@@ -1,0 +1,114 @@
+{
+  "4": {
+    "lemma": "able",
+    "count": 10,
+    "sentences": [
+      "He struggled with his disability but remained able-minded.",
+      "She is physically able to climb mountains.",
+      "You're able to communicate your thoughts clearly now.",
+      "She is able to sing beautifully.",
+      "She is able to speak three languages fluently.",
+      "Despite her disability, she proved highly adaptable and able to manage independently.",
+      "She's able to recite her multiplication facts effortlessly.",
+      "With practice, he became more and more able to play the piano fluently.",
+      "She was physically able to walk again after her recovery.",
+      "Their team's success relied on each member being able to contribute their unique skillset."
+    ]
+  },
+  "5": {
+    "lemma": "doomed",
+    "count": 10,
+    "sentences": [
+      "The project was doomed from the start due to lack of funding.",
+      "The economy had been struggling for years, its future now utterly doomed.",
+      "The young musician's career had potential, but it appeared doomed early on.",
+      "She faced an uncertain future, feeling her dreams were already doomed.",
+      "The species faced extinction due to environmental destruction, their fate sealed as doomed.",
+      "She put all her hopes into winning the lottery, but it proved to be an ill-fated endeavor, doomed to fail.",
+      "His health took a turn for the worse; he knew his life was doomed.",
+      "Despite his best efforts, he couldn't save their friendship - it was doomed.",
+      "The city's economy was projected to be completely doomed within five years.",
+      "The animal rescue mission was futile; every hope for survival was doomed."
+    ]
+  },
+  "1": {
+    "lemma": "repellent",
+    "count": 10,
+    "sentences": [
+      "The smell of rotten eggs is inherently repellent.",
+      "His rude behavior was an immediate turn-off; it had a strong repellent effect.",
+      "The venomous spider's bite caused a chilling sensation - extremely repellent.",
+      "Some people love spicy food, while others find cayenne pepper extremely unappetizing and repellent.",
+      "The sticky residue on the table was both unsightly and profoundly repellent.",
+      "The taste of durian fruit left many nauseated, yet it has its loyal enthusiasts who find it fascinatingly repellent.",
+      "The chemical odor of rotten eggs was highly repellent.",
+      "She found the harsh tone of his lecture utterly repellent.",
+      "The deep, dark cave held a repellent stench that lingered long after you entered.",
+      "The polluted river had a strong, unpleasant smell - utterly repellent."
+    ]
+  },
+  "3": {
+    "lemma": "exuberant",
+    "count": 10,
+    "sentences": [
+      "The birds chirped melodiously in the exuberant morning sun.",
+      "The children played joyfully on the freshly painted playground, their spirits exuberant.",
+      "His laughter echoed through the park during their picnic, so cheerful and exuberant.",
+      "The colorful gardens bloomed with exuberant blooms.",
+      "The music festival atmosphere was electric and exuberant.",
+      "The vibrant fireworks display filled the sky with exuberant colors.",
+      "The bird's song was an exuberant welcome to the new day.",
+      "Her energy and enthusiasm were truly exuberant.",
+      "His recovery from illness was an amazing display of exuberant health.",
+      "Despite the adversity, his positive outlook remained exuberant."
+    ]
+  },
+  "0": {
+    "lemma": "stingy",
+    "count": 10,
+    "sentences": [
+      "She accused him of being so stingy at parties, never offering to split the bill.",
+      "Her generosity extended to everyone but herself; she was famously stingy.",
+      "The stingy child didn't share his toys without being asked.",
+      "The hotel's free Wi-Fi stingy connection made browsing difficult.",
+      "After losing his job, he became extremely stingy and refused to spend anything.",
+      "In her attempt to save, she cut back on luxuries but wasn't stingy about essential needs.",
+      "The store offered a discount, but it felt like a mere token after their previous stingy attitude.",
+      "The salesman tried every trick to get more money out of him, but he remained steadfastly stingy.",
+      "The hotel's stingy policy on housekeeping resulted in complaints from guests.",
+      "The old man was incredibly stingy with his pennies."
+    ]
+  },
+  "2": {
+    "lemma": "alarmed",
+    "count": 10,
+    "sentences": [
+      "The sudden drop in temperature alarmed the scientist performing experiments in a cold storage lab.",
+      "Seeing her child alone on the playground, she felt deeply alarmed.",
+      "The sight of the storm clouds alarmed the children playing outside.",
+      "The elderly man was severely alarmed upon hearing a noise in his quiet neighborhood at night.",
+      "The witness saw someone fleeing and immediately called the police, alarmed.",
+      "The old man was alarmed to find his house broken into.",
+      "The dog's barking alarmed the neighbors.",
+      "He quickly realized he had left home without his wallet and felt vastly alarmed.",
+      "The baby's Cry itched the mother's nerves, an anxious, alarmed response.",
+      "She couldn't comprehend why she was chosen for the top-secret project, feeling alarmed and intrigued."
+    ]
+  },
+  "6": {
+    "lemma": "impressed",
+    "count": 10,
+    "sentences": [
+      "The intricate puzzle left her thoroughly impressed.",
+      "The intricate design of the stained glass window captivated passersby, leaving many impressed.",
+      "She was deeply impressed with his intelligence.",
+      "I wasn't expecting the performance to be so captivating - it really impressed me.",
+      "His intelligence amazed even the most critical observer, leaving them completely impressed.",
+      "The charity's selfless work inspired many, leaving them highly impressed.",
+      "After watching his talent on stage, everyone was thoroughly impressed.",
+      "Little Johnnie's bravery during the fire saved their lives; everyone was impressed.",
+      "The view from the summit left me utterly impressed with nature's grandeur.",
+      "She had never seen such exquisite craftsmanship before and it left her deeply impressed."
+    ]
+  }
+}

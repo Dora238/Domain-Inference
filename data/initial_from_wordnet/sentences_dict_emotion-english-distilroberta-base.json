@@ -1,0 +1,603 @@
+{
+  "4": [
+    {
+      "lemma": "able",
+      "count": 10,
+      "sentences": [
+        "He struggled with his disability but remained able-minded.",
+        "She is physically able to climb mountains.",
+        "You're able to communicate your thoughts clearly now.",
+        "She is able to sing beautifully.",
+        "She is able to speak three languages fluently.",
+        "Despite her disability, she proved highly adaptable and able to manage independently.",
+        "She's able to recite her multiplication facts effortlessly.",
+        "With practice, he became more and more able to play the piano fluently.",
+        "She was physically able to walk again after her recovery.",
+        "Their team's success relied on each member being able to contribute their unique skillset."
+      ]
+    },
+    {
+      "lemma": "abaxial",
+      "count": 10,
+      "sentences": [
+        "The abaxial epidermis on stems contains fewer waxy glands than the adaxial surface.",
+        "Abaxial growth patterns differ significantly from the more common apical development in plants.",
+        "The abaxial surfaces of flowers may be smoother for better seed dispersal through wind.",
+        "Studying abaxial anatomy can provide insight into evolutionary adaptations in organisms.",
+        "Researchers have discovered unique secondary metabolites produced solely on the abaxial sides of certain fungi.",
+        "The abaxial cone scale at the base of conifers protects against wear and damage during winter.",
+        "Rainwater slides off an abaxial cliff face differently compared to an adaxial smooth slope.",
+        "In some insects, the abaxial margin of their wings helps with steering and stability.",
+        "The abscission layer responsible for falling leaves lies on the abaxial cambium.",
+        "The abaxial side of the leaf is often paler due to less exposure."
+      ]
+    },
+    {
+      "lemma": "shortened",
+      "count": 10,
+      "sentences": [
+        "She shortened her hair before going on vacation.",
+        "The video clip had been intentionally shortened for social media viewing.",
+        "She shortened her nails before going on vacation.",
+        "The news report was lengthily shortened without losing important details.",
+        "The book's edition was shortened for the new series.",
+        "In a hurry, she skipped parts and shortened the story significantly.",
+        "I shortened my daily commute to save time.",
+        "His response was so concise; it seemed like it had been shortened.",
+        "The lecture notes were condensed into a shortened version.",
+        "The project deadline got shortened, allowing extra time for quality control."
+      ]
+    },
+    {
+      "lemma": "assimilating",
+      "count": 10,
+      "sentences": [
+        "After moving to a new country, she was rapidly assimilating their customs and language.",
+        "The child showed rapid cognitive skills, easily assimilating new information at school.",
+        "The immigrant community is making great strides in assimilating into their new nation.",
+        "The city's architecture was constantly evolving as old and new merged, assimilating various styles.",
+        "My dietary habits have changed significantly after traveling, assimilating local cuisine.",
+        "Cultural diversity requires individuals to actively work on assimilating different beliefs.",
+        "The immigrant community was quickly adapting and assimilating into their new country.",
+        "After moving to a new country, she was rapidly assimilating into local customs.",
+        "The city's diverse population is constantly adapting and assimilating various ethnic traditions.",
+        "The athlete trained tirelessly, assimilating advanced techniques from their coach."
+      ]
+    },
+    {
+      "lemma": "assimilative",
+      "count": 10,
+      "sentences": [
+        "The assimilative process of language learning helps immigrants adapt to their new home.",
+        "Artistic influences sometimes lead to assimilative fusion in creative works.",
+        "Assimilative henna tattoos have become popular among tourists.",
+        "The educational system strives for inclusive practices to foster assimilative integration.",
+        "The adaptive immune system exhibits remarkable assimilative capabilities.",
+        "Architectural styles blend assimilative features to create contemporary classics.",
+        "The immune system has an adaptive assimilative function against invading pathogens.",
+        "The chemical reaction between vinegar and baking soda is entirely assimilative.",
+        "The author's writing style was marked by assimilative influences from her favorite authors.",
+        "Language models rely on assimilative learning algorithms to improve understanding."
+      ]
+    }
+  ],
+  "0": [
+    {
+      "lemma": "stingy",
+      "count": 10,
+      "sentences": [
+        "She accused him of being so stingy at parties, never offering to split the bill.",
+        "Her generosity extended to everyone but herself; she was famously stingy.",
+        "The stingy child didn't share his toys without being asked.",
+        "The hotel's free Wi-Fi stingy connection made browsing difficult.",
+        "After losing his job, he became extremely stingy and refused to spend anything.",
+        "In her attempt to save, she cut back on luxuries but wasn't stingy about essential needs.",
+        "The store offered a discount, but it felt like a mere token after their previous stingy attitude.",
+        "The salesman tried every trick to get more money out of him, but he remained steadfastly stingy.",
+        "The hotel's stingy policy on housekeeping resulted in complaints from guests.",
+        "The old man was incredibly stingy with his pennies."
+      ]
+    },
+    {
+      "lemma": "angered",
+      "count": 10,
+      "sentences": [
+        "Angered by the news, she immediately wrote a heartfelt letter.",
+        "After losing the game, he felt deeply angered and disappointed.",
+        "The sight of destruction angered the local environmentalist.",
+        "Angered by the false news, he took to social media to express his views.",
+        "They were angered when their flight got delayed due to bad weather.",
+        "The loud noise from the construction site angered his neighbors.",
+        "She was angered by the long lines at the store.",
+        "The child's disappointment angered her mother.",
+        "witnessing injustice angered him deeply.",
+        "The government's handling of the pandemic angered countless citizens."
+      ]
+    },
+    {
+      "lemma": "enraged",
+      "count": 10,
+      "sentences": [
+        "Enraged by the unfair treatment, he decided to confront his boss.",
+        "Enraged by the lies, he tore up all their documents.",
+        "The smell of smoke enraged the fire department responding to the blaze.",
+        "Enraged at losing his job, he decided to start his own business.",
+        "After years of hard work, he finally received recognition that enraged him.",
+        "He was enraged when he found his car damaged beyond repair.",
+        "The child's laughter turned to enraged screams after being scolded.",
+        "She was so enraged about the broken vase she shouted at her children.",
+        "His competitive spirit often made opponents enraged during games.",
+        "The firecracker explosion startled everyone into an enraged dance."
+      ]
+    },
+    {
+      "lemma": "furious",
+      "count": 10,
+      "sentences": [
+        "After getting stuck in traffic for hours, she was furious.",
+        "The professor's lecture turned fiery and furious with anger over student misconduct.",
+        "The lion's roar echoed across the savannah, fierce and furious.",
+        "His rage at being lied to knew no bounds; he was furious.",
+        "The customer complained about poor service, making the waiter extremely furious.",
+        "Insecticide foggers were used to drive away an furious infestation of bugs.",
+        "She was furious at finding out her house had been broken into.",
+        "The storm left him furious with nature's fury.",
+        "The child was furious when his ice cream melted before he could finish it.",
+        "The artist's rage fueled a series of furious brushstrokes."
+      ]
+    },
+    {
+      "lemma": "infuriated",
+      "count": 10,
+      "sentences": [
+        "The traffic jam left him absolutely infuriated and swearing at the driver next to him.",
+        "The loud noise from next door completely infuriated the retired couple.",
+        "The child's tantrum infuriated their parent, making them lose patience.",
+        "The injustice of the trial left the witness visibly infuriated.",
+        "She was infuriated when she found her house cleaned before she returned.",
+        "After years of hard work, she felt vindicated and NOT INFURIATED by the promotion.",
+        "She was infuriated at the traffic jam on her way to work.",
+        "After months of waiting, her promotion finally came, but it infuriated those expecting a raise too.",
+        "The toddler's constant temper tantrums infuriated his mother during dinner time.",
+        "Learning the truth about the betrayal infuriated him beyond measure."
+      ]
+    }
+  ],
+  "5": [
+    {
+      "lemma": "unable",
+      "count": 9,
+      "sentences": [
+        "Despite her best efforts, she was unable to recall the password.",
+        "The old house's foundation was so unstable that it was unable to support its weight.",
+        "He struggled with his disability and remained unable to walk without assistance.",
+        "My pet dog was unable to understand my commands today.",
+        "Due to financial constraints, they were unable to take that dream vacation.",
+        "The robot's AI system temporarily failed, making it unable to carry out commands.",
+        "They were unable to find a parking spot near the venue.",
+        "Despite her best efforts, she remained unable to solve the complex puzzle.",
+        "The AI system temporarily malfunctioned and became unable to process data.",
+        "He felt unable to express his thoughts clearly during the meeting."
+      ]
+    },
+    {
+      "lemma": "numb",
+      "count": 9,
+      "sentences": [
+        "The medicine had made his legs feel completely numb after surgery.",
+        "The chilly breeze sent shivers down his spine, leaving him physically numb.",
+        "The old radio produced static sounds, making him feel slightly numb.",
+        "After a long hike, she noticed her feet were numb with pins and needles.",
+        "Her hands felt numb after hours of typing on the keyboard.",
+        "In grief's aftermath, she found herself emotionally numb to most things.",
+        "The shock from the news left me numb with grief.",
+        "After surgery, she was physically and mentally numb for weeks.",
+        "He couldn't feel anything with his tongue - it was numb from the cold.",
+        "The shock of losing her job left her feeling numb for days."
+      ]
+    },
+    {
+      "lemma": "defunct",
+      "count": 9,
+      "sentences": [
+        "The once-busy streetcar system faced financial difficulties, leading to its termination and becoming utterly defunct.",
+        "The beloved toy company declared bankruptcy and its products became defunct.",
+        "The abandoned amusement park with its rollercoaster and Ferris wheel stood defunct for decades.",
+        "The iconic television show's cancellation left no doubt about its status as permanently defunct.",
+        "The once-thriving theater, now filled with cobwebs and memories, marks the end of its days - defunct forever.",
+        "The old factory was once a thriving hub but is now defunct after years of neglect.",
+        "The once-dominant record label shifted towards digital music and became completely defunct.",
+        "The local department store closed down due to competition from online retailers, making it definitively defunct.",
+        "The small town's coal mine shut down, leaving behind a ghost town and an empty husk of what used to be defunct.",
+        "The charity organization transitioned into a non-profit model; their former physical offices were eventually deemed defunct."
+      ]
+    },
+    {
+      "lemma": "doomed",
+      "count": 10,
+      "sentences": [
+        "The project was doomed from the start due to lack of funding.",
+        "The economy had been struggling for years, its future now utterly doomed.",
+        "The young musician's career had potential, but it appeared doomed early on.",
+        "She faced an uncertain future, feeling her dreams were already doomed.",
+        "The species faced extinction due to environmental destruction, their fate sealed as doomed.",
+        "She put all her hopes into winning the lottery, but it proved to be an ill-fated endeavor, doomed to fail.",
+        "His health took a turn for the worse; he knew his life was doomed.",
+        "Despite his best efforts, he couldn't save their friendship - it was doomed.",
+        "The city's economy was projected to be completely doomed within five years.",
+        "The animal rescue mission was futile; every hope for survival was doomed."
+      ]
+    },
+    {
+      "lemma": "miserable",
+      "count": 10,
+      "sentences": [
+        "His broken heart left him in a miserable state.",
+        "After losing her job, she felt miserable and alone.",
+        "Despite her best efforts, the weight loss journey remained miserable due to lack of progress.",
+        "Watching loved ones suffer broke his spirit; he couldn't shake off the miserable reality.",
+        "The rainy weather made his commute miserable each day.",
+        "In his lonely cottage, John lived a miserable existence.",
+        "The sight of her tears made him feel utterly miserable.",
+        "Her divorce left her feeling absolutely miserable for months.",
+        "In the midst of war, their home life became unbearable and miserable.",
+        "The bitter cold made walking through the snowy street a miserable task."
+      ]
+    }
+  ],
+  "1": [
+    {
+      "lemma": "repellent",
+      "count": 10,
+      "sentences": [
+        "The smell of rotten eggs is inherently repellent.",
+        "His rude behavior was an immediate turn-off; it had a strong repellent effect.",
+        "The venomous spider's bite caused a chilling sensation - extremely repellent.",
+        "Some people love spicy food, while others find cayenne pepper extremely unappetizing and repellent.",
+        "The sticky residue on the table was both unsightly and profoundly repellent.",
+        "The taste of durian fruit left many nauseated, yet it has its loyal enthusiasts who find it fascinatingly repellent.",
+        "The chemical odor of rotten eggs was highly repellent.",
+        "She found the harsh tone of his lecture utterly repellent.",
+        "The deep, dark cave held a repellent stench that lingered long after you entered.",
+        "The polluted river had a strong, unpleasant smell - utterly repellent."
+      ]
+    },
+    {
+      "lemma": "acidic",
+      "count": 10,
+      "sentences": [
+        "The vinegar smell filled the room with its pungent acidic aroma.",
+        "The rainwater had an acidic taste.",
+        "Lemonade is often described as having a tart and acidic flavor.",
+        "The soil near the base of the cactus was alkaline, contrasting the plant's acidic needs.",
+        "The volcanic ash from Mount St. Helens had a distinctly acidic composition.",
+        "Acidic rain can have detrimental effects on building materials.",
+        "The chemical reaction was highly acidic, causing instant burns.",
+        "The soil pH was too acidic for most plants to survive.",
+        "She wore a protective mask against the acidic fumes from the factory.",
+        "The cleaning solution needed to be diluted due to its high acidic content."
+      ]
+    },
+    {
+      "lemma": "acid",
+      "count": 10,
+      "sentences": [
+        "He accidentally spilled vinegar on his clothes - it left a sour acid smell.",
+        "She rinsed her hands with antiseptic acid soap to kill bacteria.",
+        "The chemical reaction produced a fuming acid.",
+        "The battery acid leaked, causing corrosion on the metal case.",
+        "The city installed new concrete barriers to prevent acid rain from eroding infrastructure.",
+        "The tropical fruit lime contains citric acid, giving it its tangy flavor.",
+        "The stomach produced excess hydrochloric acid for digestion.",
+        "The local river suffered from acid pollution from industrial runoff.",
+        "The battery acid leaked, damaging the floor.",
+        "The digestive enzyme hydrochloric acid aids digestion."
+      ]
+    },
+    {
+      "lemma": "sticky",
+      "count": 10,
+      "sentences": [
+        "The syrup coated pancakes were so sticky, they refused to let go.",
+        "In the jungle, vines can become extremely sticky and trap animals.",
+        "The cookie dough was so sticky, it took great effort to shape into balls.",
+        "The honey was sticky on my fingers.",
+        "In the garden, ants crawled over the sugary nectar, making it sticky.",
+        "The glue on the paper was incredibly sticky.",
+        "The bubble solution had a very sticky residue when squeezed out.",
+        "The children played with a ball covered in rubbery, sticky substance.",
+        "She applied a coat of balsamic vinegar that left the dish really sticky.",
+        "She licked her fingers to remove the honey from her hands - it was so sticky."
+      ]
+    },
+    {
+      "lemma": "viscid",
+      "count": 10,
+      "sentences": [
+        "The freshly squeezed orange juice was so sweet it felt viscid going down.",
+        "The slime formed on the walls of the aquarium had a viscid texture.",
+        "She rubbed her eyes with a viscid solution from the medicine bottle.",
+        "Insects struggled within the gooey, viscid web spun by the spider.",
+        "The oil spill left a greasy, viscid slick on the beach.",
+        "The spider's web was thin but strong, almost viscid against the light.",
+        "The syrup had a viscid consistency and stuck to my spoon.",
+        "The tar from the road adhered strongly to his tires, creating a viscid mess.",
+        "The glue dried up with a sticky, viscid residue around its edges.",
+        "The sludge at the bottom of the swamp had an unpleasantly viscid smell."
+      ]
+    }
+  ],
+  "3": [
+    {
+      "lemma": "exuberant",
+      "count": 10,
+      "sentences": [
+        "The birds chirped melodiously in the exuberant morning sun.",
+        "The children played joyfully on the freshly painted playground, their spirits exuberant.",
+        "His laughter echoed through the park during their picnic, so cheerful and exuberant.",
+        "The colorful gardens bloomed with exuberant blooms.",
+        "The music festival atmosphere was electric and exuberant.",
+        "The vibrant fireworks display filled the sky with exuberant colors.",
+        "The bird's song was an exuberant welcome to the new day.",
+        "Her energy and enthusiasm were truly exuberant.",
+        "His recovery from illness was an amazing display of exuberant health.",
+        "Despite the adversity, his positive outlook remained exuberant."
+      ]
+    },
+    {
+      "lemma": "spry",
+      "count": 10,
+      "sentences": [
+        "She had a spry sense of humor and made everyone laugh.",
+        "With a spry leap, the bird outdistanced the rest in the sky.",
+        "The gardener kept the flowers well-watered for a healthy, spry growth.",
+        "The child's laughter was as fresh and spry as spring wind.",
+        "The spry old man moved quickly around the park.",
+        "The spry feline leaped from branch to branch with grace.",
+        "His spry mind never missed a beat despite his advancing age.",
+        "After a good night's sleep, she woke up feeling extremely spry.",
+        "The cat pounced gracefully, showing off its spry hunting skills.",
+        "The playful bird chirped its spry melodies in the morning sunshine."
+      ]
+    },
+    {
+      "lemma": "excited",
+      "count": 10,
+      "sentences": [
+        "After years of waiting, Sarah was excited to finally visit space.",
+        "After years of practice, John won the tournament and felt incredibly excited.",
+        "Sarah was excited to see her favorite band perform live.",
+        "John was excited about his first solo concert.",
+        "Her long-awaited promotion left her feeling extremely thrilled and excited.",
+        "Little Tommy was excessively excited about getting presents from Santa Claus.",
+        "After winning the lottery, Sarah was excited to plan her dream vacation.",
+        "Sarah was excited to finally visit the amusement park.",
+        "She was excited to embark on her first solo trip abroad.",
+        "The hike promised breathtaking views, making everyone excited about the adventure."
+      ]
+    },
+    {
+      "lemma": "lively",
+      "count": 10,
+      "sentences": [
+        "The partygoers danced wildly to the lively tunes of the DJ.",
+        "Her energy levels kept her friends on their toes with her lively personality.",
+        "The market square came alive during morning festivities, filled with lively vendors.",
+        "The garden's colorful flowers added a vibrant and lively touch to the surroundings.",
+        "The children played lively games under the bright sun.",
+        "His dancing skills brought excitement to every lively rhythm.",
+        "The festival atmosphere was electric, full of laughter and lively spirits.",
+        "The nightlife in the city was always lively.",
+        "The live music performance was incredibly lively and engaging.",
+        "The classroom buzzed with lively discussions after class."
+      ]
+    },
+    {
+      "lemma": "engaging",
+      "count": 10,
+      "sentences": [
+        "She found her passion for cooking through creating delicious, engaging meals.",
+        "Her storytelling skills made every encounter with her utterly engaging.",
+        "The interactive game was incredibly engaging for both kids and adults.",
+        "Her engaging storytelling skills brought characters alive on stage.",
+        "The animated movie was incredibly engaging.",
+        "She found a new hobby - painting, which turned out to be an extremely absorbing and engaging pursuit.",
+        "The live theater performance was both thought-provoking and utterly engaging.",
+        "The design of the museum exhibit was highly engaging, drawing visitors in.",
+        "Her captivating smile always made conversations with her very engaging.",
+        "Volunteering at the animal shelter was a deeply fulfilling and engaging experience."
+      ]
+    }
+  ],
+  "2": [
+    {
+      "lemma": "alarmed",
+      "count": 10,
+      "sentences": [
+        "The sudden drop in temperature alarmed the scientist performing experiments in a cold storage lab.",
+        "Seeing her child alone on the playground, she felt deeply alarmed.",
+        "The sight of the storm clouds alarmed the children playing outside.",
+        "The elderly man was severely alarmed upon hearing a noise in his quiet neighborhood at night.",
+        "The witness saw someone fleeing and immediately called the police, alarmed.",
+        "The old man was alarmed to find his house broken into.",
+        "The dog's barking alarmed the neighbors.",
+        "He quickly realized he had left home without his wallet and felt vastly alarmed.",
+        "The baby's Cry itched the mother's nerves, an anxious, alarmed response.",
+        "She couldn't comprehend why she was chosen for the top-secret project, feeling alarmed and intrigued."
+      ]
+    },
+    {
+      "lemma": "apprehensive",
+      "count": 10,
+      "sentences": [
+        "The pet owner assured the vet they weren't afraid, but sounded quite apprehensive inside.",
+        "He walked to the gate with an apprehensive air.",
+        "The adventurer felt apprehensive before bungee jumping for the first time.",
+        "After hearing the eerie noise, he became thoroughly alarmed and apprehensive.",
+        "She was apprehensive about the job interview.",
+        "She was apprehensive about her first solo presentation.",
+        "After breaking his leg, he had good reason to be apprehensive about physical therapy.",
+        "The child clung to his mother's leg, feeling intensely apprehensive.",
+        "The patient entered the operating room feeling intensely apprehensive.",
+        "The teacher tried to reassure the apprehensive students during a test."
+      ]
+    },
+    {
+      "lemma": "claustrophobic",
+      "count": 10,
+      "sentences": [
+        "The crowded city center made him feel uncomfortable and slightly claustrophobic.",
+        "She felt claustrophobic walking through the narrow alleyway.",
+        "She felt claustrophobic at the thought of being stuck in an elevator during a power outage.",
+        "Her childhood home with tiny rooms had her feeling permanently claustrophobic.",
+        "The ancient maze fascinated him, but its narrow passages left him feeling utterly claustrophobic.",
+        "At night, the sound of echoes in the empty house filled Emily with dread, making her acutely claustrophobic.",
+        "The closed-off balcony overlooking the city made him feel vulnerable and claustrophobic at night.",
+        "The abandoned elevator made Sarah feel profoundly claustrophobic.",
+        "After the earthquake, the child clung to his mother, overcome with a severe claustrophobic episode.",
+        "After years living in city life, John's love for nature became too overwhelming - he found urban jungles claustrophobic."
+      ]
+    },
+    {
+      "lemma": "fearful",
+      "count": 10,
+      "sentences": [
+        "Myths and legends created a fearful tale for bedtime.",
+        "The little child was fearful of the dark.",
+        "The little bird hid behind the leaf, afraid and fearful.",
+        "The snake's hiss filled the air with a fearful atmosphere.",
+        "The hiker felt fearful at the sight of the towering mountain peak.",
+        "The unknown future instilled deep within her a fearful sense.",
+        "The stormy weather filled them with fearful anticipation.",
+        "The thunderstorm left everyone feeling frightened and fearful.",
+        "Despite bravado, he couldn't shake off the fearful memory.",
+        "The thunderstorm made everyone feel uneasy; their breaths grew rapid and fearful."
+      ]
+    },
+    {
+      "lemma": "frightened",
+      "count": 10,
+      "sentences": [
+        "The little girl hid behind her mother, frightened of the thunderstorm.",
+        "The creature's sudden appearance frightened everyone present.",
+        "witnessing the car accident left me thoroughly frightened.",
+        "The thief was frightened when he realized he had been discovered.",
+        "The old woman looked frightened when she saw her reflection in the dark mirror.",
+        "The frightened horse fled from the noisy crowd at the fairground.",
+        "The child was frightened by the loud thunderstorm.",
+        "The kitten was frightened when it discovered its own reflection in the window.",
+        "My pet dog cowered under the table, frightened by fireworks outside.",
+        "The old man looked at the shadows with frightened eyes, unsure who approached."
+      ]
+    }
+  ],
+  "6": [
+    {
+      "lemma": "unexceptionable",
+      "count": 6,
+      "sentences": [
+        "Her manners were always unexceptionable.",
+        "His cooking skills were truly unexceptionable, making him a household star.",
+        "The view from the top of the mountain was an unexceptionable sight.",
+        "The dessert she served was an unexceptionable blend of flavors.",
+        "Their attention to detail in crafting furniture was universally admired as unexceptionable.",
+        "Her taste in fashion was always impeccable and unexceptionable.",
+        "The customer service provided was unparalleled, highly unexceptionable.",
+        "The dessert's sweetness was perfectly balanced, utterly unexceptionable.",
+        "His attention to detail made every project he worked on unexceptionable.",
+        "His singing voice was truly unexceptionable and captivating."
+      ]
+    },
+    {
+      "lemma": "impressed",
+      "count": 10,
+      "sentences": [
+        "The intricate puzzle left her thoroughly impressed.",
+        "The intricate design of the stained glass window captivated passersby, leaving many impressed.",
+        "She was deeply impressed with his intelligence.",
+        "I wasn't expecting the performance to be so captivating - it really impressed me.",
+        "His intelligence amazed even the most critical observer, leaving them completely impressed.",
+        "The charity's selfless work inspired many, leaving them highly impressed.",
+        "After watching his talent on stage, everyone was thoroughly impressed.",
+        "Little Johnnie's bravery during the fire saved their lives; everyone was impressed.",
+        "The view from the summit left me utterly impressed with nature's grandeur.",
+        "She had never seen such exquisite craftsmanship before and it left her deeply impressed."
+      ]
+    },
+    {
+      "lemma": "shocked",
+      "count": 10,
+      "sentences": [
+        "His honest confession left everyone shocked.",
+        "My pet dog's unexpected agility left me shocked.",
+        "His unexpected promotion left him utterly shocked.",
+        "I was shocked to find out she won the lottery.",
+        "She heard her own voice and was completely shocked.",
+        "The child's admission of stealing left their mother shocked speechless.",
+        "After discovering her true identity, she was shocked.",
+        "The witness saw a ghost and described it, leaving people thoroughly shocked.",
+        "The teacher's sudden absence shocked the class.",
+        "The stormy weather took us all aback, leaving us shocked."
+      ]
+    },
+    {
+      "lemma": "fascinating",
+      "count": 3,
+      "sentences": [
+        "The intricate patterns in nature's architecture are simply fascinating.",
+        "The physicist's groundbreaking discoveries left scientists in awe, finding them fascinating.",
+        "Learning about different cultures is an endlessly fascinating subject.",
+        "She found the underwater world of corals and marine life utterly fascinating.",
+        "The ancient civilization's architectural wonders were absolutely fascinating.",
+        "The way plants adapt to their environment is incredibly fascinating.",
+        "The discovery of ancient civilizations was absolutely fascinating.",
+        "The intricate patterns on butterfly wings were simply fascinating.",
+        "The mystery behind the lost city's disappearance was truly fascinating.",
+        "His love for rare books collected some fascinating literary finds."
+      ]
+    },
+    {
+      "lemma": "pregnant",
+      "count": 4,
+      "sentences": [
+        "She found out she was pregnant on her birthday.",
+        "The young woman decided against an abortion when she found out she was unexpectedly pregnant.",
+        "Sarah was surprised to find out she's pregnant.",
+        "After years of trying, they conceived naturally and were thrilled to be pregnant again.",
+        "She was surprised to find out she was pregnant after just one date.",
+        "The young couple adopted a baby soon after they found out she was pregnant.",
+        "The abandoned house held a secret - a former resident who gave birth secretly while pregnant.",
+        "After years of trying, they were finally pregnant with twins.",
+        "The charity focused on supporting single parents who became pregnant unexpectedly.",
+        "Despite his initial reluctance, he embraced fatherhood with a surprised and pregnant smile."
+      ]
+    }
+  ],
+  "-1": [
+    {
+      "lemma": "highly_infective",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "complemental",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "adjective",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "venturous",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "worked_up",
+      "count": 0,
+      "sentences": []
+    }
+  ]
+}

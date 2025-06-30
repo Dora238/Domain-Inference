@@ -25,6 +25,7 @@ import os
 from collections import Counter
 import json
 import re
+from tqdm import tqdm
 
 class WordNetConditioner(nn.Module):
     """Learnable prompt vector for steering text generation.
@@ -292,130 +293,153 @@ class WordNetConditioner(nn.Module):
 
         return model_name, score
 
-    def generate_sentences(self, lemma, max_sentences=20):
-        prompt = f"Write one short English sentence using the word '{lemma}'. Only output the sentence.\n"
-        sentences = []
-        inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
-        output_ids = self.model.generate(
-            **inputs,
-            num_beams=max_sentences,
-            num_beam_groups=max_sentences,
-            max_length=64,
-            temperature=0.7,
-            # top_p=0.95,
-            do_sample=False,
-            diversity_penalty=3.0,
-            no_repeat_ngram_size=2,
-            repetition_penalty=10.0,
-            pad_token_id=self.tokenizer.eos_token_id,
-            num_return_sequences=max_sentences,
-        )
-        full_output = self.tokenizer.batch_decode(output_ids, skip_special_tokens=True)
-        sentences = [full_output.replace(prompt.strip(), "").strip() for full_output in full_output]
-        sentences = [s for s in sentences if s] 
-        return sentences
+
+
+    def generate_sentences(self, lemma, max_sentences=20, max_tries=10):
+        collected = set()
+        tries = 0
+
+        while len(collected) < max_sentences and tries < max_tries:
+            messages = [
+                {"role": "system", "content": "You are a helpful assistant that only responds in English."},
+                {"role": "user", "content": (
+                    f"Generate {max_sentences} short, diverse English sentences. "
+                    f"Each sentence must include the word '{lemma}' as a separate, standalone word. "
+                    f"Do not use any words that merely contain '{lemma}' as a part, such as in prefixes, suffixes, or roots. "
+                    f"The word must appear by itself, not embedded in another word. "
+                    f"Only output the sentences, one per line."
+                )}
+            ]
+            prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+            inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
+
+            output_ids = self.model.generate(
+                **inputs,
+                do_sample=True,
+                top_p=0.9,
+                temperature=1.0,
+                max_new_tokens=512,
+                pad_token_id=self.tokenizer.eos_token_id,
+                repetition_penalty=1.2,
+                num_return_sequences=1,
+            )
+
+            full_decoded = self.tokenizer.decode(output_ids[0], skip_special_tokens=True).strip()
+            if "assistant" in full_decoded.lower():
+                split_text = re.split(r'assistant\s*[:：]?', full_decoded, flags=re.IGNORECASE)
+                content = split_text[-1].strip()
+            else:
+                content = full_decoded
+
+            lines = [re.sub(r"^\d+[\.\)]\s*", "", line).strip() for line in content.split("\n")]
+            clean_lines = [line for line in lines if line and
+                        re.search(rf'\b{re.escape(lemma.lower())}\b', line.lower()) and
+                        all(ord(c) < 128 for c in line)]
+
+            collected.update(clean_lines)
+            tries += 1
+
+        return list(collected)[:max_sentences]
+
+
+
 
     def evaluate_sentences(self, sentences):
-        labels = [self.classifier.predict([s])[0] for s in sentences]
+        if not sentences:
+            return -1, 0, []  # Return default values if no sentences
+        
+        labels = [self.classifier.predict([s]) for s in sentences]
         counter = Counter(labels)
+        
+        if not counter:
+            return -1, 0, labels  # Return default values if counter is empty
+        
         majority_label, count = counter.most_common(1)[0]
         return majority_label, count, labels
-    
-    def collect_words(self, max_words=500, label_word_limit=10):
-
-        words_dict = defaultdict(list)              # 记录每个 label 对应的词
-        best_count_by_label = defaultdict(int)      # 记录每个 label 最好的 count
-        word_count = 0
-
-        for synset in self.all_synsets[:max_words]:
-            for lemma in synset.lemma_names():
-                if word_count % 100 == 0:
-                    print(f"已收集 {word_count} 个词汇")
-
-                # 1. 生成多个句子
-                sentences = self.generate_sentences(lemma, max_sentences=label_word_limit)
-
-                # 2. 用 black_box 分类
-                majority_label, count, _ = self.evaluate_sentences(sentences)
-
-                # 3. 动态更新逻辑
-                if count > best_count_by_label[majority_label]:
-                    best_count_by_label[majority_label] = count
-
-                    # 记录 lemma 及其句子
-                    words_dict[majority_label].append({
-                        "lemma": lemma,
-                        "sentences": sentences
-                    })
-
-                    word_count += 1
-                    print(f"更新 label {majority_label} 的最优 count 为 {count}，加入新词：{lemma}")
-
-                    if all(len(words) > label_word_limit for words in words_dict.values()):
-                        return words_dict
-
-        return words_dict
 
     def collect_sentences(
         self,
         max_words: int = 500,
-        label_word_limit: int = 20,
+        label_word_limit: int = 10,
+        top_lemmas_per_label: int = 5,
     ):
         """
-        - words_dict[label]     → 历史最优演进轨迹（每刷新一次就 append 一条）
-        - best_dict[label]      → 始终保存当前“最高 count”的记录
+        - words_dict[label]     → 每个标签保存前top_lemmas_per_label个最好的lemma和sentences
+        - best_dict[label]      → 始终保存当前"最高 count"的记录
         - 每 100 个 lemma（word_count % 100 == 10）存一次快照
+        - 当每个标签都收集到top_lemmas_per_label个lemma时结束
         """
-        words_dict      = defaultdict(list)   # 历史
-        best_dict       = {}                  # 当前最佳
-        best_count      = defaultdict(int)
-        word_count      = 0
+        words_dict = defaultdict(list)   # 每个标签的前N个最佳lemma
+        best_dict = {}                  # 当前最佳
+        best_count = defaultdict(int)
+        word_count = 0
 
         os.makedirs(self.load_initial_path, exist_ok=True)
 
-        for synset in self.all_synsets[:max_words]:
+        for synset in tqdm(self.all_synsets[:max_words]):
             for lemma in synset.lemma_names():
 
                 # 0) 进度快照 --------------------------------------------------------
                 if word_count % 100 == 10:
                     print(f"已评估 {word_count} 个 lemma，保存快照…")
-                    snap_base = f"{self.classifier.model_name}_{word_count}"
-                    with open(f"{self.load_initial_path}/words_dict_{snap_base}.json", "w", encoding="utf-8") as f:
+                    snap_base = f"{self.classifier.model_name}"
+                    with open(f"{self.load_initial_path}/sentences_dict_{snap_base}.json", "w", encoding="utf-8") as f:
                         json.dump(words_dict, f, ensure_ascii=False, indent=2)
-                    with open(f"{self.load_initial_path}/best_dict_{snap_base}.json", "w", encoding="utf-8") as f:
+                    with open(f"{self.load_initial_path}/best_sentences_dict_{snap_base}.json", "w", encoding="utf-8") as f:
                         json.dump(best_dict, f, ensure_ascii=False, indent=2)
 
                 # 1) 生成 & 评价 ------------------------------------------------------
                 sentences = self.generate_sentences(lemma, max_sentences=label_word_limit)
                 majority_label, count, _ = self.evaluate_sentences(sentences)
 
-                # 2) 是否刷新最佳 ------------------------------------------------------
-                if count > best_count[majority_label]:
-                    best_count[majority_label] = count
-
-                    # (a) 更新 words_dict（历史）
-                    words_dict[majority_label].append({
-                        "lemma": lemma,
-                        "count": count,
-                        "sentences": sentences,
-                    })
-
-                    # (b) 更新 best_dict（当前最佳）
-                    best_dict[majority_label] = {
+                # 2) 处理结果 ------------------------------------------------------
+                # 如果这个标签还没有收集够top_lemmas_per_label个lemma，或者当前lemma的count比已收集的最小count更好
+                current_list = words_dict.get(majority_label, [])
+                if (
+                    len(current_list) < top_lemmas_per_label
+                    or (current_list and count > min(item["count"] for item in current_list))
+                ):
+                    # 创建新的lemma记录
+                    new_record = {
                         "lemma": lemma,
                         "count": count,
                         "sentences": sentences,
                     }
 
+                    # 如果已达到限制，移除count最小的记录
+                    if len(current_list) >= top_lemmas_per_label:
+                        min_idx = min(range(len(current_list)), key=lambda i: current_list[i]["count"])
+                        current_list.pop(min_idx)
+
+                    # 添加新记录
+                    current_list.append(new_record)
+                    words_dict[majority_label] = current_list
+
+                    print(f"[label {majority_label}] ✨ 添加新lemma: '{lemma}', count={count}, 当前收集: {len(current_list)}/{top_lemmas_per_label}")
+                
+                # 更新best_dict（当前最佳）
+                if count > best_count[majority_label]:
+                    best_count[majority_label] = count
+                    best_dict[majority_label] = {
+                        "lemma": lemma,
+                        "count": count,
+                        "sentences": sentences,
+                    }
                     print(f"[label {majority_label}] ✨ 新最优 count={count}, lemma='{lemma}'")
 
                 word_count += 1
 
-                # 3) 提前结束：每个 label 已达到阈值 ------------------------------
-                if best_dict and all(
-                    rec["count"] >= label_word_limit for rec in best_dict.values()
+                # 3) 提前结束：每个标签都收集到了top_lemmas_per_label个lemma ------------------------------
+                # 获取分类器的所有可能标签
+                all_labels = self.classifier.get_all_labels()
+                
+                # 检查是否每个标签都已收集到足够的lemma，并且每个lemma的count都等于label_word_limit
+                if all_labels and all(
+                    len(words_dict[label]) >= top_lemmas_per_label and 
+                    all(item["count"] == label_word_limit for item in words_dict[label])
+                    for label in all_labels
                 ):
-                    print("所有 label 均达到目标计数，提前结束。")
+                    print(f"所有标签都已收集到{top_lemmas_per_label}个lemma，且所有lemma的count都达到{label_word_limit}，提前结束。")
                     return words_dict, best_dict
 
         return words_dict, best_dict
@@ -588,20 +612,13 @@ class WordNetConditioner(nn.Module):
         # 获取所有同义词集
         self.all_synsets = list(wn.all_synsets())
         print(f"WordNet中共有 {len(self.all_synsets)} 个同义词集")
-        if load_word_wordnet:
-            words_dict = self.collect_words(
-                max_words=1000,
-                label_word_limit=10
-            )
-            self.save_words(words_dict, f"{self.load_initial_path}/words_by_label_{self.classifier.model_name}.txt")
-
-            return words_dict
-        else:
-            words_dict, best_dict = self.collect_sentences(max_words=1000, label_word_limit=20)
-            self.save_words(words_dict, f"{self.load_initial_path}/sentence_by_label_{self.classifier.model_name}.txt")
-            best_dict_path = f"{self.load_initial_path}/best_dict_{self.classifier.model_name}_final.json"
-            self.save_words(best_dict, best_dict_path)
-            return words_dict
+        snap_base = f"{self.classifier.model_name}"
+        words_dict, best_dict = self.collect_sentences(max_words=1000, label_word_limit=10)
+        with open(f"{self.load_initial_path}/sentences_dict_{snap_base}.json", "w", encoding="utf-8") as f:
+            json.dump(words_dict, f, ensure_ascii=False, indent=2)
+        with open(f"{self.load_initial_path}/best_sentences_dict_{snap_base}.json", "w", encoding="utf-8") as f:
+            json.dump(best_dict, f, ensure_ascii=False, indent=2)
+        return words_dict
 
 
 if __name__ == "__main__":

@@ -43,6 +43,8 @@ def create_argparser():
     parser.add_argument("--max_iterations", type=int, default=50, help="x_start优化的最大迭代次数")
     parser.add_argument("--num_samples", type=int, default=10, help="每次评估生成的样本数量")
     parser.add_argument("--alpha_max", type=float, default=4.0, help="二分法搜索的alpha的最大值")
+    parser.add_argument("--initial_sentence_from_wordnet", type=lambda x: (str(x).lower() == 'true'), 
+                   default=False, help="是否从WordNet初始化句子，接受True或False")
     return parser
 
 
@@ -71,7 +73,7 @@ def run_domain_discovery(args):
     optimizer = ExpansionDirectionOptimizer(decoder=t5_generator, classifier=classifier, eta=args.target_success_rate)
 
     # Load WordNet conditioner
-    wordnet_conditioner = WordNetConditioner(init_method='wordnet', classifier=classifier, max_words=5000, min_words_per_category=20, initial_sentence_from_wordnet=False, t5_generator=t5_generator).to(device)
+    wordnet_conditioner = WordNetConditioner(init_method='wordnet', classifier=classifier, max_words=5000, min_words_per_category=20, initial_sentence_from_wordnet=args.initial_sentence_from_wordnet, t5_generator=t5_generator).to(device)
     word_dict = wordnet_conditioner.word_dict
     word_dict = OrderedDict(sorted(word_dict.items()))
     best_embeddings = []
@@ -92,7 +94,7 @@ def run_domain_discovery(args):
         #     best_direction = best_direction
         #     best_alpha = best_alpha
         best_text = t5_generator.generate_from_hidden_state(best_embedding.unsqueeze(0))
-        print(f"Best alpha: {best_alpha}, Best embedding: {best_embedding.shape}, Best direction: {best_direction.shape}, Best alpha metric: {best_alpha_metric}, Best  text: {best_text}")
+        # print(f"Best alpha: {best_alpha}, Best embedding: {best_embedding.shape}, Best direction: {best_direction.shape}, Best alpha metric: {best_alpha_metric}, Best  text: {best_text}")
         best_embeddings.append(best_embedding)
         best_directions.append(best_direction)
         best_alphas.append(best_alpha)
