@@ -2,24 +2,13 @@
 
 import torch
 import torch.nn as nn
-import numpy as np
-from typing import Optional, List, Dict, Tuple, Set, Union
 from nltk.corpus import wordnet as wn
-import nltk
-import random
 from collections import defaultdict
-from pathlib import Path
 from domain_infer.classifier import Classifier
-from sklearn.cluster import KMeans
-from sklearn.metrics import pairwise_distances_argmin_min
-from sentence_transformers import SentenceTransformer
-from torch.utils.data import DataLoader, Dataset
 from transformers import T5Tokenizer, T5EncoderModel, GPT2Tokenizer, GPT2Model, AutoTokenizer, AutoModelForCausalLM, AutoModelForSequenceClassification
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 from sklearn.metrics import silhouette_score
 import os
 from collections import Counter
@@ -51,7 +40,7 @@ class WordNetConditioner(nn.Module):
         min_words_per_category: int = 20,
         visual: bool = False,
         classifier = None,
-        initial_sentence_from_wordnet = True,
+        initial_sentence_from_wordnet = False,
         t5_generator = None,
     ):
         super().__init__()
@@ -473,10 +462,10 @@ class WordNetConditioner(nn.Module):
             word_dict: 每个label下的词汇列表
         """
         if self.initial_sentence_from_wordnet:
-            word_dict = self.traverse_wordnet()
+            self.word_dict = self.traverse_wordnet()
         else:
-            word_dict = self.load_from_json()
-        for label, entry in word_dict.items():
+            self.word_dict = self.load_from_json()
+        for label, entry in self.word_dict.items():
             sentences = entry.get('sentences', [])
             if not sentences:
                 continue
@@ -499,40 +488,24 @@ class WordNetConditioner(nn.Module):
                 # 从原始 embeddings 中取值（未 detach）
                 closest_embedding = embeddings[closest_idx]
 
-                word_dict[label]['center_sentence'] = sentences[closest_idx]
-                word_dict[label]['embedding_center'] = closest_embedding  # 原始 tensor，未转 list
+                self.word_dict[label]['center_sentence'] = sentences[closest_idx]
+                self.word_dict[label]['embedding_center'] = closest_embedding  # 原始 tensor，未转 list
 
-        self.word_dict = word_dict
-        pca_visual = self.visual
-
-        if pca_visual:
+        if self.visual:
             for model_name in ["T5", "GPT2", "Bert"]:
-                embeddings = self.get_embeddings(word_dict, model_name=model_name)
+                embeddings = self.get_embeddings(self.word_dict, model_name=model_name)
                 model_name, score = self.visual_embedding(embeddings, model_name)
         cluster = False
         if cluster:
-            embeddings_dict, embeddings_words_dict = self.cluster_wordnet(word_dict)
+            embeddings_dict, embeddings_words_dict = self.cluster_wordnet(self.word_dict)
             return embeddings_dict, embeddings_words_dict
         else:
-            return None, word_dict
+            return None, self.word_dict
     
 
     def load_from_json(self):
-        # 获取所有符合模式的文件名
-        pattern = re.compile(rf"best_dict_{re.escape(self.classifier.model_name)}_(\d+)\.json")
-        max_word_count = -1
-        best_file = None
 
-        for fname in os.listdir(self.load_initial_path):
-            match = pattern.match(fname)
-            if match:
-                word_count = int(match.group(1))
-                if word_count > max_word_count:
-                    max_word_count = word_count
-                    best_file = fname
-
-        if best_file is None:
-            raise FileNotFoundError(f"No matching best_dict_*.json found for model {self.classifier.model_name} in {self.load_initial_path}")
+        best_file = f"{self.load_initial_path}/best_sentences_dict_{self.classifier.model_name}.json"
 
         json_path = os.path.join(self.load_initial_path, best_file)
         with open(json_path, "r", encoding="utf-8") as f:

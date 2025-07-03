@@ -88,6 +88,7 @@ class ExpansionDirectionOptimizer:
         # self.target_label = int(target_label)
 
         self.eta              = eta
+        # self.eta = -1
         self.alpha_min        = alpha_min
         self.alpha_max        = alpha_max
         self.eps              = eps
@@ -95,7 +96,10 @@ class ExpansionDirectionOptimizer:
         self.num_beams        = num_beams
 
         # 冻结 (或自带) expansion module
-        self.expansion_module = expansion_module or MultiExpansion()
+        if expansion_module is not None:    
+            self.expansion_module = expansion_module
+        else:
+            self.expansion_module = MultiExpansion()
         self.expansion_module = self.expansion_module.to(self.device)
         self.expansion_module.eval()
 
@@ -140,104 +144,139 @@ class ExpansionDirectionOptimizer:
     # --------- 2. 二分 alpha（带符号翻转 + 失败掩码）-------------
     @torch.no_grad()
     def _binary_search_alpha(self, Z: torch.Tensor, directions: torch.Tensor, target_label: int
-                             ) -> Tuple[float, torch.Tensor, torch.Tensor]:
+                             ) -> Tuple[float, torch.Tensor, torch.Tensor, int]:
         """
         返回：
             best_alpha                 (float, -1 若 alpha_min 也失败)
             signed_dirs  (n,L,D)       —— 若 –alpha 成功，则已取 -d
             failed_mask  (n,) bool     —— 在 best_alpha 上仍失败的方向
+            fail_cnt     (int)         —— 仍失败的方向数量
         """
         n, L, _ = directions.shape
-        low, high      = self.alpha_min, self.alpha_max
-        best_alpha     = -1.0
-        best_signed    = directions.clone()
-        best_failed    = torch.ones(n, dtype=torch.bool, device=Z.device)
-
-        sqrt_L = L ** 0.5
+        low, high = self.alpha_min, self.alpha_max
+        
+        # Initialize with failure case
+        best_alpha = -1.0
+        best_signed = directions.clone()
+        best_failed = torch.ones(n, dtype=torch.bool, device=Z.device)
+        best_fail_cnt = n * 2  # Max possible fails
 
         for _ in range(self.max_binary_steps):
-            mid_alpha  = (low + high) / 2
-            success_cnt = 0
-            signed_now  = directions.clone()   # 每轮临时
-            failed_now  = torch.zeros(n, dtype=torch.bool, device=Z.device)
+            mid_alpha = (low + high) / 2
+            if mid_alpha == low or mid_alpha == high: # Avoid infinite loop
+                break
 
-            # ---- 逐方向评估 (+alpha / -alpha) ----------------------
+            success_cnt = 0
+            fail_cnt = 0
+            signed_now = directions.clone()
+            failed_now = torch.zeros(n, dtype=torch.bool, device=Z.device)
+
             for i in range(n):
                 plus_ok, minus_ok = self._dir_success(Z, directions[i], mid_alpha, target_label)
 
-                if plus_ok:
+                if plus_ok or minus_ok:
                     success_cnt += 1
-                elif minus_ok:
-                    success_cnt += 1
-                    signed_now[i].mul_(-1)       # 方向翻转
-                else:
-                    failed_now[i] = True         # 双向都失败
+                    if plus_ok and minus_ok:
+                        
+                        # Both directions work, implies Z is already good.
+                        # We can treat this as a success without needing a direction update.
+                        signed_now[i].mul_(0)
+                        # fail_cnt is not incremented (0 fails)
+                    elif minus_ok: # Only minus succeeded
+                        signed_now[i].mul_(-1)
+                        fail_cnt += 1 # plus failed
+                    elif plus_ok: # Only plus succeeded
+                        signed_now[i].mul_(1)
+                        fail_cnt += 1 # minus failed
+                    else: # Both failed
+                        failed_now[i] = True
+                    signed_now[i].mul_(0) # Not strictly needed but clear
+                    fail_cnt += 2
 
             ratio = success_cnt / n
-            # NOTE: Would ratio fluctuates too much in repeting experiments?
-            if ratio >= self.eta:                # 合格 → 加大 alpha
-                best_alpha  = mid_alpha
+            if ratio >= self.eta:  # Success rate is good enough, try larger alpha
+                print(f"Ratio: {ratio:.2f}, low: {low:.4f}, high: {high:.4f}")  
+                best_alpha = mid_alpha
                 best_signed = signed_now.clone()
                 best_failed = failed_now.clone()
-                low         = mid_alpha
-            else:                                # 不合格 → 缩小 alpha
+                best_fail_cnt = fail_cnt
+                low = mid_alpha
+            else:  # Success rate is too low, need smaller alpha
                 high = mid_alpha
 
             if high - low < self.eps:
                 break
 
-        return best_alpha, best_signed, best_failed
+        return best_alpha, best_signed, best_failed, best_fail_cnt
 
     # --------- 3. 外层 hill-climb：用失败均值反推 Z ----------
     @torch.no_grad()
     def optimise(self,
                  Z_init: torch.Tensor,
                  target_label: int,
-                 max_outer: int = 30,
+                 max_outer_steps: int = 30,
                  gamma_init: float = 0.08,
                  tol: float = 1e-3,
                  min_step: float = 1e-4
-                 ) -> Tuple[float, float, torch.Tensor]:
+                 ) -> Tuple[float, torch.Tensor, torch.Tensor]:
         """
-        返回：
-            alpha_raw, alpha_scaled (= alpha/√L), signed_dirs
-        """
-        Z_best   = Z_init.squeeze(0).to(self.device).clone()
-        gamma    = gamma_init
+        通过迭代优化，寻找一个更优的词向量 Z，并返回最后一次迭代的结果。
 
-        # 初始方向
+        返回 (Tuple[float, torch.Tensor, torch.Tensor]):
+            - best_alpha (float): 最后一次迭代找到的最佳缩放系数 alpha。
+            - Z (torch.Tensor): 经过 max_outer_steps 次优化后的最终词向量。
+            - directions (torch.Tensor): 基于最终的 Z 生成的扩展方向。
+        """
+        Z_best = Z_init.squeeze(0).to(self.device).clone()
+        gamma = gamma_init
+
+        # --- 初始评估 ---
         dirs_best = self.expansion_module(Z_best)
-        alpha_best, signed_best, failed_best = self._binary_search_alpha(Z_best, dirs_best, target_label)
+        alpha_best, signed_best, failed_best, best_fail_cnt = self._binary_search_alpha(Z_best, dirs_best, target_label)
 
-        if alpha_best < 0:                       # alpha_min 都失败
-            return -1.0, -1.0, signed_best
-        expansion_dir = None
-        # ------------ 外层迭代:优化偏倚步长 ------------------------------
-        for _ in tqdm(range(max_outer)): 
-            if (~failed_best).all():         # 所有方向成功 ⇒ 局部最优
-                break
+        if alpha_best < 0:
+            print("Initial alpha is negative, optimization failed at start.")
+            return -1.0, Z_best, dirs_best
+        
+        expansion_dir = dirs_best
+
+        # --- 外层迭代: 优化 Z ---
+        for i in tqdm(range(max_outer_steps), desc="Optimizing Z"):
+            successful_mask = ~failed_best
+            # if successful_mask.all():
+            #     print(f"\nAll directions succeeded at step {i+1}. Reached local optimum.")
+            #     break
+            
             if gamma < min_step:
+                print(f"\nLearning rate (gamma) too small at step {i+1}. Stopping.")
                 break
-
-            # 1) 失败方向均值
-            mean_fail = signed_best[failed_best].mean(dim=0)
-            mean_fail = mean_fail / mean_fail.norm()    # 单位化
-
-            # 2) 反向位移
-            Z_cand = Z_best - gamma * mean_fail
-
-            # 3) 在新 Z 上重新生成方向并二分 alpha
+            
+            if not successful_mask.any():
+                print(f"\nWarning: No successful directions found at step {i+1}. Cannot update Z.")
+                break
+            
+            # --- 1. 计算更新方向 ---
+            avg_successful_dirs = signed_best[successful_mask].mean(dim=0)
+            
+            # --- 2. 生成候选 Z 并评估 ---
+            Z_cand = Z_best + gamma * avg_successful_dirs
             dirs_cand = self.expansion_module(Z_cand)
-            alpha_cand, signed_cand, failed_cand = self._binary_search_alpha(Z_cand, dirs_cand, target_label)
+            alpha_cand, signed_cand, failed_cand, fail_cnt = self._binary_search_alpha(Z_cand, dirs_cand, target_label)
 
-            # 4) 接受-拒绝 + 步长自适应
-            if alpha_cand > alpha_best + tol:
-                Z_best, alpha_best = Z_cand, alpha_cand
-                signed_best, failed_best = signed_cand, failed_cand
-                gamma *= 1.2     # 放大步长
+            # --- 3. 接受-拒绝 + 步长自适应 ---
+            if (alpha_cand > alpha_best + tol) or (abs(alpha_cand - alpha_best) < tol and fail_cnt < best_fail_cnt):
+                print(f"\nAccepted new Z at step {i+1}. Alpha: {alpha_best:.4f} -> {alpha_cand:.4f}, Fails: {best_fail_cnt} -> {fail_cnt}")
+                Z_best        = Z_cand
+                alpha_best    = alpha_cand
+                signed_best   = signed_cand
+                failed_best   = failed_cand
                 expansion_dir = dirs_cand
+                best_fail_cnt = fail_cnt
+                gamma *= 1.2
             else:
-                gamma *= 0.6     # 缩小步长
-        print(f"Best alpha: {alpha_best}")
-        print(f"Best embedding: {Z_best}")
+                print(f"\nRejected new Z at step {i+1}. Alpha: {alpha_best:.4f} -> {alpha_cand:.4f}, Fails: {best_fail_cnt} -> {fail_cnt}")
+                
+                gamma *= 0.6
+                
+        print(f"\nOptimization finished. Best alpha: {alpha_best:.4f}")
         return alpha_best, Z_best, expansion_dir
