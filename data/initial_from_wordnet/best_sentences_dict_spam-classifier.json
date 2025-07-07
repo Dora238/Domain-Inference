@@ -1,0 +1,34 @@
+{
+  "0": {
+    "lemma": "able",
+    "count": 10,
+    "sentences": [
+      "She is able to climb mountains effortlessly.",
+      "My little brother learned how to ride a bike within weeks - he's incredibly able.",
+      "He's highly able to solve complex problems.",
+      "After months of rehabilitation, the athlete was finally able to return to full training.",
+      "She struggled with her disability but remained determinedly able.",
+      "The old house needed repairs, but its occupants remained able to live there comfortably.",
+      "She is physically able to climb mountains.",
+      "He struggled to walk with his injured leg, but eventually became able again.",
+      "He struggled with his math problems but proved able through determination.",
+      "My dog can fetch balls and understand basic commands - he's very able."
+    ]
+  },
+  "1": {
+    "lemma": "machine-controlled",
+    "count": 5,
+    "sentences": [
+      "The bank implemented biometric authentication via machine-controlled security systems.",
+      "She programmed her home security system to be fully machine-controlled.",
+      "The bank's online banking platform offers entirely machine-controlled transactions.",
+      "The medical facility utilized advanced machine-controlled imaging systems for diagnosis.",
+      "The factory floor was filled with machine-controlled robots performing precise assembly.",
+      "The intelligent chatbot responded quickly to customer queries with machine-controlled algorithms.",
+      "Machine-controlled drones surveyed disaster areas during emergencies.",
+      "The smart home system integrated various devices under machine-controlled centralization.",
+      "The factory floor was filled with machine-controlled robots assembling cars.",
+      "The new surgical robot is completely machine-controlled for precise surgeries."
+    ]
+  }
+}

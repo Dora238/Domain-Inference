@@ -10,10 +10,8 @@ import sys
 from tqdm import tqdm
 import json
 from collections import OrderedDict
+from config import PROJECT_ROOT, SRC_PATH
 
-# 添加项目根目录到路径
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-SRC_PATH = PROJECT_ROOT / "src"
 sys.path.append(str(PROJECT_ROOT))
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
@@ -34,8 +32,6 @@ class RandomExpansion(nn.Module):
     def forward(self, Z):
         return self.directions
 
-
-
 def create_argparser():
     """创建命令行参数解析器"""
     parser = argparse.ArgumentParser(description="测试不同扩展方向生成方法对alpha的影响")
@@ -45,18 +41,20 @@ def create_argparser():
                         default="j-hartmann/emotion-english-distilroberta-base", 
                         help="分类器模型名称")
     parser.add_argument("--output_dir", type=str, 
-                        default=f'{PROJECT_ROOT}/output/direction_test', 
+                        default=f'{PROJECT_ROOT}/output/direction_test2', 
                         help="结果保存目录")
     parser.add_argument("--num_directions", type=int, default=50,
                         help="生成的扩展方向数量")
-    parser.add_argument("--target_success_rate", type=float, default=0.8,
+    parser.add_argument("--target_success_rate", type=float, default=0.5,
                         help="目标成功率阈值")
-    parser.add_argument("--alpha_max", type=float, default=4.0,
+    parser.add_argument("--alpha_max", type=float, default=8.0,
                         help="二分法搜索的alpha的最大值")
     parser.add_argument("--seed", type=int, default=42,
                         help="随机种子")
+    args = parser.parse_args()
+    args.num_directions = int(args.num_directions // args.target_success_rate)
     
-    return parser
+    return args
 
 
 def load_generator():
@@ -143,12 +141,12 @@ def test_direction_methods(args, classifier, t5_generator):
     
     # 对每个标签进行测试
     i = 0
-    max_outer_steps = 6
-    max_binary_steps = 10
+    max_outer_steps = 10
+    max_binary_steps = 15
     for label, entry in tqdm(word_dict.items(), desc="测试标签"):
-        i += 1
-        if i == 2:
-            break
+        # i += 1
+        # if i == 2:
+        #     break
         label_results = {}
         
         # 获取初始句子和嵌入
@@ -171,7 +169,7 @@ def test_direction_methods(args, classifier, t5_generator):
             alpha_max=args.alpha_max,
             max_binary_steps=max_binary_steps,
         )
-        alpha_random, embedding_random, direction_random = optimizer_random.optimise(
+        alpha_random, embedding_random, direction_random, successful_mask_random = optimizer_random.optimise(
             Z, target_label=int(label),max_outer_steps=max_outer_steps
         )
         
@@ -189,7 +187,7 @@ def test_direction_methods(args, classifier, t5_generator):
         
         # 测试原始MultiExpansion方法
         print("测试原始MultiExpansion方法...")
-        alpha_nn, embedding_nn, direction_nn = optimizer_nn.optimise(
+        alpha_nn, embedding_nn, direction_nn, successful_mask = optimizer_nn.optimise(
             Z, target_label=int(label), max_outer_steps=max_outer_steps
         )
         
@@ -204,6 +202,18 @@ def test_direction_methods(args, classifier, t5_generator):
         print(f"cos sim nn: {cos_sim_nn}")
         print(f"cos sim random: {cos_sim_random}")
         print(f"cos sim generator: {cos_sim_generator}")
+        
+        embedding_nn_success = embedding_nn[successful_mask]
+        direction_nn_success = direction_nn[successful_mask]
+        embedding_random_success = embedding_random[successful_mask_random]
+        direction_random_success = direction_random[successful_mask_random]
+        
+        # save embedding and direction
+        torch.save(Z, args.output_dir / f"embedding_init_{label}.pt")
+        torch.save(embedding_nn_success, args.output_dir / f"embedding_nn_success_{label}.pt")
+        torch.save(direction_nn_success, args.output_dir / f"direction_nn_success_{label}.pt")
+        torch.save(embedding_random_success, args.output_dir / f"embedding_random_success_{label}.pt")
+        torch.save(direction_random_success, args.output_dir / f"direction_random_success_{label}.pt")
         
         # 存储结果
         label_results = {
@@ -274,16 +284,15 @@ def visualize_results(results, output_dir):
 def main():
     """主函数"""
     # 解析命令行参数
-    parser = create_argparser()
-    args = parser.parse_args()
+    args = create_argparser()
     
     # 设置随机种子
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
     
     # 创建输出目录
-    output_dir = Path(args.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
+    args.output_dir = Path(args.output_dir)
+    args.output_dir.mkdir(parents=True, exist_ok=True)
     
     print("正在初始化组件...")
     
@@ -296,11 +305,11 @@ def main():
     results = test_direction_methods(args, classifier, t5_generator)
     
     # 保存结果
-    with open(output_dir / "direction_test_results.json", "w") as f:
+    with open(args.output_dir / "direction_test_results.json", "w") as f:
         json.dump(results, f, indent=2)
     
     # 可视化结果
-    visualize_results(results, output_dir)
+    visualize_results(results, args.output_dir)
     
     print("测试完成！")
 

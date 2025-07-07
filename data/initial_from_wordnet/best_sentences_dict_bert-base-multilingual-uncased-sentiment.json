@@ -1,0 +1,82 @@
+{
+  "4": {
+    "lemma": "ideal",
+    "count": 10,
+    "sentences": [
+      "Sustainable living is often seen as the ideal lifestyle choice.",
+      "In nature, a balanced ecosystem embodies the ideal of ecological balance.",
+      "The ideal diet balances all nutrients without compromising taste.",
+      "A perfect vacation spot is often considered an ideal destination.",
+      "In art, capturing a moment perfectly can be considered ideal representation.",
+      "Pursuing knowledge without limits is an ideal pursuit, according to philosophers.",
+      "A dream home is an ideal retreat from city chaos.",
+      "She yearned for a life filled with simplicity and authenticity, her personal ideal.",
+      "The concept of utopia represents an ideal society where conflicts never arise.",
+      "The ideal climate combines warm sun with mild temperatures - a dream scenario."
+    ]
+  },
+  "1": {
+    "lemma": "short-staffed",
+    "count": 10,
+    "sentences": [
+      "The local hospital faced temporary shortages due to being short-staffed.",
+      "The nonprofit organization had difficulty organizing their charity event due to limited volunteers, hence short-staffed.",
+      "The library was frequently short-staffed during weekdays, leaving patrons struggling to find assistance.",
+      "The emergency room was temporarily shut down due to unavailability of medical personnel; it's short-staffed.",
+      "The retail store encountered operational difficulties when they had an unexpected surge of customers and were short-staffed.",
+      "The accounting department held back essential tasks until more accountants could be hired, creating a short-staffed situation.",
+      "The retail store had to close early due to lack of staff; it was short-staffed.",
+      "The call center experienced long wait times because they were short-staffed.",
+      "City services suffered after several key employees resigned, leaving them short-staffed.",
+      "The school auditorium events were canceled several times due to lack of stage crew members, making it short-staffed."
+    ]
+  },
+  "3": {
+    "lemma": "relational",
+    "count": 10,
+    "sentences": [
+      "Emotional intelligence plays a vital role in relational communication.",
+      "Relational databases store data interconnected through relationships.",
+      "Social media's impact is deeply relational; it shapes public opinion.",
+      "Family dynamics influence our relational skills.",
+      "Social support networks provide a relational safety net.",
+      "Understanding cultural differences enhances relational understanding.",
+      "Personal growth often involves healing past relational wounds.",
+      "Time spent together builds strong relational bonds.",
+      "Cultural differences can influence relational norms worldwide.",
+      "Emotional relational skills guide successful relationships."
+    ]
+  },
+  "0": {
+    "lemma": "pestiferous",
+    "count": 10,
+    "sentences": [
+      "The smell of rotten fruit filled the air, making it pestiferous to be around.",
+      "The factory belched toxic fumes, turning the city into a living nightmare - pestiferous and unhealthy.",
+      "The garden was infested with caterpillars - their voracious feeding made everything pestiferous.",
+      "The polluted river caused health issues; its pestiferous waters were off-putting.",
+      "The agricultural pesticide left residues that harmed both humans and wildlife, becoming highly pestiferous.",
+      "The bird flu outbreak was identified as pestiferous, causing panic among local communities.",
+      "The fungus on bread turned appetizing into unappetizing due to its pestiferous appearance.",
+      "The noisy construction site contributed to the area's increasing pollution, making it unbearable to live near - pestiferous indeed.",
+      "The neighbor's barking dog became pestiferous after endless nights.",
+      "Insects swarmed over the abandoned house, creating an eerie, pestiferous atmosphere."
+    ]
+  },
+  "2": {
+    "lemma": "shy",
+    "count": 8,
+    "sentences": [
+      "The little cat hid behind its owner, feeling shy.",
+      "After years of performing, he still felt a bit shy about accepting compliments.",
+      "He had always been an introverted person, somewhat shy.",
+      "In social situations, Laura would often retreat, being overly shy.",
+      "His pet bird would always hide behind its cage during visitors, being too shy.",
+      "After years of practice, Tim no longer felt shy while giving public speeches.",
+      "Despite his adventurous nature, he remained secretly shy around crowds.",
+      "Emily was shy about performing on stage.",
+      "Jane's reserved nature made her quite shy at parties.",
+      "The actor was known for his quiet demeanor and shy presence on stage."
+    ]
+  }
+}

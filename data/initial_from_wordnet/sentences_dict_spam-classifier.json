@@ -1,0 +1,129 @@
+{
+  "0": [
+    {
+      "lemma": "able",
+      "count": 10,
+      "sentences": [
+        "She is able to climb mountains effortlessly.",
+        "My little brother learned how to ride a bike within weeks - he's incredibly able.",
+        "He's highly able to solve complex problems.",
+        "After months of rehabilitation, the athlete was finally able to return to full training.",
+        "She struggled with her disability but remained determinedly able.",
+        "The old house needed repairs, but its occupants remained able to live there comfortably.",
+        "She is physically able to climb mountains.",
+        "He struggled to walk with his injured leg, but eventually became able again.",
+        "He struggled with his math problems but proved able through determination.",
+        "My dog can fetch balls and understand basic commands - he's very able."
+      ]
+    },
+    {
+      "lemma": "unable",
+      "count": 10,
+      "sentences": [
+        "Despite his desire to learn, the child was unable to read because of visual impairments.",
+        "They tried several times but failed utterly, unable to reach the summit of the mountain.",
+        "His heart sank when he realized he was unable to attend his friend's wedding from abroad.",
+        "Despite his best efforts, Sam was unable to solve the complex math problem.",
+        "The musician's fingers refused to cooperate, making him unable to play his guitar.",
+        "She felt unable to share her inner struggles with anyone due to embarrassment.",
+        "They were unable to reach the remote mountain village due to bad weather.",
+        "The elderly man struggled with arthritis and found it unable to perform daily tasks without assistance.",
+        "My pet dog is always unable to fetch my tennis ball.",
+        "The company invested heavily in research, yet they remained unable to find a cure for the rare disease."
+      ]
+    },
+    {
+      "lemma": "abaxial",
+      "count": 10,
+      "sentences": [
+        "The abaxial surface of the fruit contains a waxy layer for water conservation.",
+        "In botany, abaxial growth refers to plants developing below their leaves and stems.",
+        "The abaxial side of the leaf is often shielded from direct sunlight.",
+        "Abaxial scales protect certain species of reptiles from predators at night.",
+        "Abaxial fur on animals like sloths helps them blend into tree bark.",
+        "Researchers studied how temperature affects the abaxial cambium's cell division.",
+        "An insect's antennae exhibit different sensory capabilities on the abaxial end.",
+        "A geological feature called an abaxial fault runs parallel to strike-slip boundaries.",
+        "During metamorphosis, abaxial tissues transform into body parts in insects.",
+        "Abaxial microorganisms play crucial roles in nutrient cycling within ecosystems."
+      ]
+    },
+    {
+      "lemma": "dorsal",
+      "count": 10,
+      "sentences": [
+        "The giraffe's thick spinal column provided support for its dorsal backbone.",
+        "The museum exhibit featured a preserved dinosaur fossil with a visible dorsal vertebrae series.",
+        "The coral reef displayed a vibrant array of colorful dorsal creatures.",
+        "The fish had a distinctive dorsal fin.",
+        "The turtle's upper body was adorned with a beautiful creamy-colored dorsal plume.",
+        "The dragonfly's wings exhibited an elegant dorsal stripe.",
+        "The lizard's head nestled on its muscular dorsal limbs.",
+        "In anatomy class, we studied the human dorsal surface on dissections.",
+        "The aircraft's engine hummed quietly from its dorsal compartment.",
+        "After a workout, she massaged her sore muscles along her dorsal side."
+      ]
+    },
+    {
+      "lemma": "adaxial",
+      "count": 10,
+      "sentences": [
+        "The adaxial side of a stem is often covered with waxy layers for better water conservation.",
+        "Analyzing fungal mycelium reveals an intricate network of both radial and adaxial strands.",
+        "The adaxial side of the leaf always faced the sun.",
+        "Researchers analyzed the soil to study the distribution of fungi along the adaxial surface.",
+        "The insect's exoskeleton had distinctively patterned adaxial regions.",
+        "In his biology class, he learned about the importance of studying plants' adaxial growth.",
+        "When designing a wind turbine, engineers focus on the aerodynamics of the blades to optimize the adaxial surface.",
+        "The flowers' nectaries were positioned at their adaxial surfaces for maximum pollination.",
+        "The tree's canopy formed an adaxial microclimate protecting the lower branches.",
+        "On the adaxial wall of the seashell, patterns were intricately etched."
+      ]
+    }
+  ],
+  "1": [
+    {
+      "lemma": "machine-controlled",
+      "count": 5,
+      "sentences": [
+        "The bank implemented biometric authentication via machine-controlled security systems.",
+        "She programmed her home security system to be fully machine-controlled.",
+        "The bank's online banking platform offers entirely machine-controlled transactions.",
+        "The medical facility utilized advanced machine-controlled imaging systems for diagnosis.",
+        "The factory floor was filled with machine-controlled robots performing precise assembly.",
+        "The intelligent chatbot responded quickly to customer queries with machine-controlled algorithms.",
+        "Machine-controlled drones surveyed disaster areas during emergencies.",
+        "The smart home system integrated various devices under machine-controlled centralization.",
+        "The factory floor was filled with machine-controlled robots assembling cars.",
+        "The new surgical robot is completely machine-controlled for precise surgeries."
+      ]
+    }
+  ],
+  "-1": [
+    {
+      "lemma": "on_the_go",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "highly_infective",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "complemental",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "adjective",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "venturous",
+      "count": 0,
+      "sentences": []
+    }
+  ]
+}

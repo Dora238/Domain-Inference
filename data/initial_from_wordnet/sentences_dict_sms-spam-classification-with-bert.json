@@ -1,0 +1,112 @@
+{
+  "0": [
+    {
+      "lemma": "able",
+      "count": 10,
+      "sentences": [
+        "The young boy was eager and able to read on his own.",
+        "She's an able-bodied athlete.",
+        "He is physically able to climb steep mountains.",
+        "She is physically able to climb mountains.",
+        "With practice, he became increasingly able to meditate for longer periods.",
+        "It was amazing how the bird was able to fly with just one wing.",
+        "Despite his limitations, he was able to adapt quickly.",
+        "After overcoming the fear, he felt mentally able to face any obstacle.",
+        "They were able to complete the project within the given deadline.",
+        "Despite the challenge, she remained determined and able to learn new skills."
+      ]
+    },
+    {
+      "lemma": "unable",
+      "count": 10,
+      "sentences": [
+        "The company announced it would be unable to meet its quarterly targets.",
+        "They were unable to reach an agreement on the contract terms.",
+        "The chef accidentally dropped the ingredients, unable to salvage the dish.",
+        "They were unable to reach the evacuation site during the storm.",
+        "The baby showed signs of being unable to latch onto the breastfeed.",
+        "The old man couldn't hear well and was unable to follow the conversation.",
+        "She was unable to comprehend the complex concept.",
+        "Despite trying multiple times, she remained unable to solve the puzzle.",
+        "Due to unforeseen circumstances, the flight was unable to take off.",
+        "She was unable to find her keys despite searching everywhere."
+      ]
+    },
+    {
+      "lemma": "abaxial",
+      "count": 10,
+      "sentences": [
+        "Soil nutrients preferentially reach the abaxial root tips during uptake.",
+        "Researchers investigate the abaxial side's response to environmental stresses.",
+        "Under a microscope, you can see distinct abaxial cell walls in this cork sample.",
+        "On some fruits, an abaxial lobe protects seeds from predators.",
+        "Abaxial growth on plants occurs at the lower and outer regions.",
+        "In botanical terminology, the abaxial epidermis covers the back surface.",
+        "Abaxial petal movements are crucial for pollination in many flowers.",
+        "The seed coat displays an abaxial ridging for better water storage.",
+        "The abaxial margin of the flower often helps with wind dispersal.",
+        "The abaxial side of the leaf is often paler due to less exposure."
+      ]
+    },
+    {
+      "lemma": "dorsal",
+      "count": 10,
+      "sentences": [
+        "The butterfly's bright blue underside contrasted with its duller dorsal markings.",
+        "The roof of the ancient temple had intricate carvings on the dorsal walls.",
+        "The reptile curled into a protective position with its dorsal scales facing up.",
+        "The spinal column exhibits a distinct dorsal ridge for support.",
+        "The dorsal fin of the shark slicing through the water was majestic.",
+        "The whale's large dorsal hump provided stability during migration.",
+        "The giraffe's tall dorsal pillar allows it to reach leaves high in trees.",
+        "The dolphin's acrobatic flips revealed their supple dorsal musculature.",
+        "The museum displayed fossils from prehistoric creatures featuring broad dorsal plates.",
+        "In medical research, examining the mammalian spine from the dorsal perspective is crucial."
+      ]
+    },
+    {
+      "lemma": "adaxial",
+      "count": 10,
+      "sentences": [
+        "Researchers observed fungal growth exclusively on the adaxial bark of old oak trees.",
+        "Our team measured the height difference between the two plants using their respective adaxial growth indicators.",
+        "In taxonomy, the adaxial side of a flower is often more visible than the abaxial.",
+        "Soil nutrients were concentrated at the adaxial end of root hairs, enhancing uptake.",
+        "When comparing leaves under light microscopy, they showed distinct patterns based on their adaxial sides.",
+        "The adaxial surface of the leaf was smooth and greasy.",
+        "The tree's branches spread outwards along its adaxial growth pattern.",
+        "The adaxial region of the bird's beak served for catching insects efficiently.",
+        "The plant's stem had a thickened adaxial side to protect against water loss.",
+        "The insect molted, revealing its bright red exoskeleton on the adaxial segments."
+      ]
+    }
+  ],
+  "1": [],
+  "-1": [
+    {
+      "lemma": "highly_infective",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "complemental",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "adjective",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "venturous",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "anaerobiotic",
+      "count": 0,
+      "sentences": []
+    }
+  ]
+}

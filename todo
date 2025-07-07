@@ -1,0 +1,23 @@
+let us dicuss first, always use chinese to explain but code not chinese. withoutmy permission dont change my code. 
+
+1. Have the embedding optimized?
+    yes, but reject too much
+        - first try: beginiing at lower eta 
+2. multi init start for optimize
+3. expasion num N is fixed, but init expansion num is N//target_success_rate. 
+4. one question is the add directions to embedding, optimize is not deeply. change is not enough
+    For example, {
+  "0": {
+    "initial_sentence": "She accused him of being so stingy at parties, never offering to split the bill.",
+    "random": {
+      "alpha": 4.453125,
+      "text": [
+        "She accused him of being too stingy at parties, claiming he never would split the bill.",
+        "She accused him of being stingy at parties, claiming he never would split the bill.",
+        "She accused him of being too stingy at parties, claiming he never would split the bill."
+      ]
+    }
+  }
+    }
+    consider mask each embedding ang generate:
+     - if classify no change, then mask this embedding

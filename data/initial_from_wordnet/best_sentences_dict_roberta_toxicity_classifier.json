@@ -1,0 +1,34 @@
+{
+  "0": {
+    "lemma": "able",
+    "count": 10,
+    "sentences": [
+      "I've always been able to recall names effortlessly.",
+      "The old man was still able to walk despite his advancing age.",
+      "Despite her disability, he believes she's fully able to contribute positively.",
+      "She is physically able to climb mountains.",
+      "They were able to rescue the stranded hiker from the snowy terrain.",
+      "Despite the challenging climb, she proved mentally able to reach the summit.",
+      "She is physically able to walk for hours without stopping.",
+      "He is able to speak three languages fluently.",
+      "The old house stood tall, its walls still able to withstand storms.",
+      "He's an able musician with perfect pitch."
+    ]
+  },
+  "1": {
+    "lemma": "dumb",
+    "count": 10,
+    "sentences": [
+      "Some politicians say anything to win votes, but their policies are often bafflingly dumb.",
+      "In ancient times, people often believed in silly superstitions - what a dumb belief!",
+      "He made a dumb decision, regretting it later.",
+      "She thought he was being really dumb for forgetting his keys again.",
+      "The teacher explained it three times; still, some kids found the math problem quite dumb.",
+      "Learning to play an instrument is far from easy; even the basics can feel pretty dumb at first.",
+      "His silence spoke louder than any clever comeback - he was being real dumb.",
+      "She found the math problem so complicated; her response was just plain dumb.",
+      "The joke she thought was funny turned out to be incredibly dumb.",
+      "It's dumb how we sometimes let emotions cloud our judgment instead of thinking logically."
+    ]
+  }
+}

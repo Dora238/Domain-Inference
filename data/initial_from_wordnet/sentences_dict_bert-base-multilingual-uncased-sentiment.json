@@ -1,0 +1,439 @@
+{
+  "4": [
+    {
+      "lemma": "ideal",
+      "count": 10,
+      "sentences": [
+        "Sustainable living is often seen as the ideal lifestyle choice.",
+        "In nature, a balanced ecosystem embodies the ideal of ecological balance.",
+        "The ideal diet balances all nutrients without compromising taste.",
+        "A perfect vacation spot is often considered an ideal destination.",
+        "In art, capturing a moment perfectly can be considered ideal representation.",
+        "Pursuing knowledge without limits is an ideal pursuit, according to philosophers.",
+        "A dream home is an ideal retreat from city chaos.",
+        "She yearned for a life filled with simplicity and authenticity, her personal ideal.",
+        "The concept of utopia represents an ideal society where conflicts never arise.",
+        "The ideal climate combines warm sun with mild temperatures - a dream scenario."
+      ]
+    },
+    {
+      "lemma": "faithful",
+      "count": 10,
+      "sentences": [
+        "Faithful Tom always showed up on time to his friend's gatherings.",
+        "Faithful to his promise, he returned home from exile.",
+        "He was an unyielding, faithful servant of his king.",
+        "In life's journey, she remained steadfastly faithful to her core values.",
+        "His childlike belief in Santa Claus remained steadfast and faithful.",
+        "The ancient church held fast to its faithful traditions.",
+        "Faithful friends stood by each other during difficult times, never leaving their side.",
+        "The faithful monk spent countless hours in prayer.",
+        "Faithful to her principles, she never compromised.",
+        "Despite trials, their love remained fiercely faithful."
+      ]
+    },
+    {
+      "lemma": "essential",
+      "count": 10,
+      "sentences": [
+        "Sunscreen blocks harmful UV rays - an essential skincare product.",
+        "Essential oils provide natural remedies for various ailments.",
+        "Cultural diversity adds richness to our society, essential for understanding.",
+        "A healthy diet and exercise are essential for well-being.",
+        "Sunscreen is essential for preventing skin damage from UV rays.",
+        "Time management is essential for effective productivity.",
+        "The library's collection of essential texts is invaluable.",
+        "An essential skill for success is adaptability.",
+        "Music therapy can be highly essential for mental health.",
+        "Emergency response teams are essential in crisis situations."
+      ]
+    },
+    {
+      "lemma": "best",
+      "count": 10,
+      "sentences": [
+        "His tennis skills made him the best player on his team.",
+        "My grandmother makes the best apple pie you've ever tasted.",
+        "His guitar playing improved dramatically; now he's considered the best amateur musician in town.",
+        "The warmth and hospitality of their home were unparalleled - they were the best hosts anyone could ask for.",
+        "This library has the most comprehensive collection of science books - it's simply the best resource.",
+        "The view from the top of the mountain was breathtaking - undoubtedly the best natural scenery.",
+        "She always wins the award for the best performer at school recitals.",
+        "She found her dream job working for Google, it's the best fit for her skills.",
+        "After years of research, they discovered the cure - it truly proved to be the best solution.",
+        "The view from the top of Mount Everest is considered the best in the world."
+      ]
+    },
+    {
+      "lemma": "precious",
+      "count": 10,
+      "sentences": [
+        "The old family photograph held dear to his heart was incredibly precious.",
+        "Time spent with loved ones is a precious memory forever cherished.",
+        "The grandmother passed down a family heirloom - a precious necklace.",
+        "She held a rare, precious orchid tightly.",
+        "The vintage watch with its intricate design was incredibly precious.",
+        "The little bird's song was a most precious sound to his ear.",
+        "Every drop of rainwater from the garden was deemed precious during drought.",
+        "The precious diamond sparkled in her hand.",
+        "The snowfall on Christmas morning was pure magic, so precious.",
+        "The rare gemstone's sparkling color made it an exceptionally precious treasure."
+      ]
+    }
+  ],
+  "0": [
+    {
+      "lemma": "pestiferous",
+      "count": 10,
+      "sentences": [
+        "The smell of rotten fruit filled the air, making it pestiferous to be around.",
+        "The factory belched toxic fumes, turning the city into a living nightmare - pestiferous and unhealthy.",
+        "The garden was infested with caterpillars - their voracious feeding made everything pestiferous.",
+        "The polluted river caused health issues; its pestiferous waters were off-putting.",
+        "The agricultural pesticide left residues that harmed both humans and wildlife, becoming highly pestiferous.",
+        "The bird flu outbreak was identified as pestiferous, causing panic among local communities.",
+        "The fungus on bread turned appetizing into unappetizing due to its pestiferous appearance.",
+        "The noisy construction site contributed to the area's increasing pollution, making it unbearable to live near - pestiferous indeed.",
+        "The neighbor's barking dog became pestiferous after endless nights.",
+        "Insects swarmed over the abandoned house, creating an eerie, pestiferous atmosphere."
+      ]
+    },
+    {
+      "lemma": "furious",
+      "count": 10,
+      "sentences": [
+        "She stormed out, her face flushed with furious indignation.",
+        "The jogger was furious when she discovered her headphones gone from her bag.",
+        "The athlete clenched her fists, teeth gnashing with furious determination.",
+        "The furious client demanded compensation for a faulty product.",
+        "Seeing his son waste food, the chef became fiercely furious and chased him away.",
+        "The child sobbed quietly under the covers, consumed by furious tears.",
+        "The CEO fired an employee over a minor mistake, leaving them absolutely furious.",
+        "In disbelief, Alice watched her wallet being stolen, feeling fiercely furious.",
+        "The storm was so furious; lightning struck three times in an hour.",
+        "Furious at being kept waiting, the customer slammed their fist on the counter."
+      ]
+    },
+    {
+      "lemma": "inanimate",
+      "count": 10,
+      "sentences": [
+        "A daisy bloomed brightly amidst the field of inanimate grass.",
+        "Inanimate rocks stood silently at the foot of the mountain.",
+        "The porcelain doll wore a vacant expression, her body rendered completely inanimate by time.",
+        "The grandfather clock chimed each hour, its cogs inanimate poetry.",
+        "The clock chimed at midnight, its mechanism inanimate yet timekeeping precise.",
+        "The clock's mechanism ticking was an inanimate sound in the room.",
+        "The city streetlights illuminated passively, their glass casing inanimate during the night.",
+        "The stillness of the library shelves, filled with countless inanimate books.",
+        "The robot followed precise instructions, showing inanimate functionality.",
+        "In the museum, the fossilized bones lay lifeless, inanimate evidence of ancient creatures."
+      ]
+    },
+    {
+      "lemma": "disgraced",
+      "count": 10,
+      "sentences": [
+        "After years of service, he was disgraced when caught embezzling company funds.",
+        "Her public image was completely disgraced after admitting to drunk driving.",
+        "The once-celebrated chef was disgraced after serving contaminated food.",
+        "After his financial scandal, he was disgraced and lost all credibility.",
+        "Her drunken behavior at the charity event made her look utterly disgraced before witnesses.",
+        "The athlete's reputation was severely disgraced following a doping scandal.",
+        "His family name was forever disgraced when their business empire collapsed.",
+        "She had to resign due to allegations of corruption, leaving her deeply disgraced.",
+        "Ingrid's affair with her boss tarnished her reputation and left her feeling truly disgraced.",
+        "She felt deeply ashamed and disgraced after publicly accusing her partner of infidelity."
+      ]
+    },
+    {
+      "lemma": "unauthorised",
+      "count": 10,
+      "sentences": [
+        "The pet store received complaints about unauthorised animals running loose.",
+        "The unauthorised access to confidential data resulted in serious security breaches.",
+        "The unauthorised intruder broke into the server room at night.",
+        "The bank flagged suspect transactions due to unauthorised activity.",
+        "Visitors were strictly warned against attempting unauthorised tours in the restricted area.",
+        "Security cameras caught a thief attempting to bypass unauthorised barriers.",
+        "Unauthorised access to confidential data was detected.",
+        "The employee claimed they had unauthorised entry into the office after hours.",
+        "She found an unauthorised copy of her friend's book on their computer.",
+        "The charity's funds were found misappropriated; it was all unauthorised transactions."
+      ]
+    }
+  ],
+  "1": [
+    {
+      "lemma": "short-staffed",
+      "count": 10,
+      "sentences": [  
+        "The local hospital faced temporary shortages due to being short-staffed.",
+        "The nonprofit organization had difficulty organizing their charity event due to limited volunteers, hence short-staffed.",
+        "The library was frequently short-staffed during weekdays, leaving patrons struggling to find assistance.",
+        "The emergency room was temporarily shut down due to unavailability of medical personnel; it's short-staffed.",
+        "The retail store encountered operational difficulties when they had an unexpected surge of customers and were short-staffed.",
+        "The accounting department held back essential tasks until more accountants could be hired, creating a short-staffed situation.",
+        "The retail store had to close early due to lack of staff; it was short-staffed.",
+        "The call center experienced long wait times because they were short-staffed.",
+        "City services suffered after several key employees resigned, leaving them short-staffed.",
+        "The school auditorium events were canceled several times due to lack of stage crew members, making it short-staffed."
+      ]
+    },
+    {
+      "lemma": "strained",
+      "count": 9,
+      "sentences": [
+        "After the long flight, she felt her neck strained from poor posture.",
+        "He strained his eyes to read the tiny print on the book.",
+        "The musician's fingers were visibly strained from hours of practice.",
+        "Their relationship had become strained due to constant misunderstandings.",
+        "The old guitar string needed replacing; it was too strained and broken.",
+        "The athlete's strained eyes indicated exhaustion during the marathon.",
+        "The garden plants appeared slightly strained under the hot sun.",
+        "After a long day at work, she strained her neck from leaning forward.",
+        "The family's finances were tightly strained due to unexpected expenses.",
+        "She struggled with the strained laughter after hearing an old joke."
+      ]
+    },
+    {
+      "lemma": "panicked",
+      "count": 10,
+      "sentences": [
+        "After losing her wallet, she panicked trying to locate it.",
+        "During the lockdown, some people panicked over losing their jobs.",
+        "She panicked when the power went out mid-evening, unsure if anyone was okay.",
+        "They panicked when they realized their flight had been canceled.",
+        "Seeing the snake in the garden, the kid panicked and hid behind his mother.",
+        "Seeing her child alone outside during the storm, the mother panicked and ran towards them.",
+        "In the face of uncertainty, he always tends to overreact, panicked.",
+        "He was so anxious about the job interview; he panicked in front of the mirror.",
+        "After finding out about the break-in, the old man sat calmly, but inside, he was panicked.",
+        "During the storm, they panicked about their home getting flooded."
+      ]
+    },
+    {
+      "lemma": "unnerved",
+      "count": 10,
+      "sentences": [
+        "Her hands trembled uncontrollably when she had to confront her fear of heights - it always left her utterly unnerved.",
+        "The eerie silence in the abandoned house filled her with unease, leaving her deeply unnerved.",
+        "After hearing his joke, even the tough guy couldn't help being unnerved.",
+        "The sudden loud noise made her jump, leaving her feeling unnerved and shaky.",
+        "The sudden silence before the thunderstorm unnerved everyone gathered outside.",
+        "The news of their break-up left Sarah feeling bewildered and incredibly unnerved.",
+        "In the dark forest, the faint rustling sound made her feel deeply unnerved.",
+        "Despite her training, she felt unnerved on stage for the first time.",
+        "Seeing the live snake coiled on stage left him thoroughly unnerved.",
+        "He received an unexpected invitation and was utterly unnerved about attending alone."
+      ]
+    },
+    {
+      "lemma": "unengaged",
+      "count": 10,
+      "sentences": [
+        "Her hobbies had become routine, causing her to feel emotionally unengaged.",
+        "The once vibrant community gathering lost its spark, making everyone unengaged.",
+        "The athlete showed no signs of being unengaged during their training sessions.",
+        "The library's collection failed to captivate her, leaving her feeling unengaged.",
+        "She felt unengaged after years of monotonous work in a corporate job.",
+        "His lack of interest made him an unengaged participant in group discussions.",
+        "He felt unengaged after years of working in a soulless corporate job.",
+        "The film's plotline seemed too predictable, leaving me utterly unengaged.",
+        "The teacher noticed a few students appearing disinterested and unengaged in class.",
+        "Despite her brilliant mind, she found herself unengaged with the mundane tasks."
+      ]
+    }
+  ],
+  "3": [
+    {
+      "lemma": "relational",
+      "count": 10,
+      "sentences": [
+        "Emotional intelligence plays a vital role in relational communication.",
+        "Relational databases store data interconnected through relationships.",
+        "Social media's impact is deeply relational; it shapes public opinion.",
+        "Family dynamics influence our relational skills.",
+        "Social support networks provide a relational safety net.",
+        "Understanding cultural differences enhances relational understanding.",
+        "Personal growth often involves healing past relational wounds.",
+        "Time spent together builds strong relational bonds.",
+        "Cultural differences can influence relational norms worldwide.",
+        "Emotional relational skills guide successful relationships."
+      ]
+    },
+    {
+      "lemma": "objective",
+      "count": 10,
+      "sentences": [
+        "The company's main objective is customer satisfaction.",
+        "The instructor emphasized the importance of staying objective during debates.",
+        "Objective assessment methods were used to evaluate student performance.",
+        "His primary objective was to conquer the mountain peak.",
+        "Her personal goal was to hike Mount Everest, an ambitious objective.",
+        "His scientific research had a clear objective to understand climate change.",
+        "Objective analysis helped identify market trends accurately.",
+        "The team worked towards unifying their objective of global environmental sustainability.",
+        "She had a personal fitness objective to run a marathon.",
+        "Learning new languages is a fundamental educational objective."
+      ]
+    },
+    {
+      "lemma": "summative",
+      "count": 10,
+      "sentences": [
+        "After months of practice, she gave a summative assessment to evaluate her students' progress.",
+        "Summative assessments help teachers gauge student understanding at the end of term.",
+        "The teacher's summer review packet served as a summative check before the new school year started.",
+        "Summer camp concluded with a fun-filled summative day filled with games and performances.",
+        "The summative analysis showed significant improvements in their writing skills over the semester.",
+        "Her performance review provided a comprehensive summative assessment of her work duties.",
+        "The sports meeting marked the summative conclusion of the season-long competition.",
+        "The teacher used a project-based learning approach, culminating in a summative assessment.",
+        "In mathematics, quizzes served as formative assessments before the summative exam.",
+        "The company's annual report provided a summative review of their financial performance."
+      ]
+    },
+    {
+      "lemma": "grade-appropriate",
+      "count": 10,
+      "sentences": [
+        "The school curriculum is carefully designed to be grade-appropriate.",
+        "The kindergarten class played games that fostered social skills and were grade-appropriate.",
+        "Parents were notified of their child's grade-appropriate math test scores.",
+        "Parents attended an open house to discuss their child's progress and future grade-appropriate classes.",
+        "Parents were praised for selecting grade-appropriate textbooks.",
+        "Students progressed through a sequence of grade-appropriate art projects.",
+        "Grade-appropriate content was prioritized in the curriculum design.",
+        "Teachers differentiate lessons to meet each student's unique grade-appropriate needs.",
+        "The school board carefully selects books for each grade-appropriate reading level.",
+        "The teacher encouraged students to discuss topics relevant to their grade-appropriate curriculum."
+      ]
+    },
+    {
+      "lemma": "associatory",
+      "count": 10,
+      "sentences": [
+        "She uses mnemonic devices to improve her associatory abilities.",
+        "The associatory function in art allows creators to link ideas seamlessly.",
+        "Emotional responses can be triggered by familiar stimuli via associatory connections.",
+        "In art therapy, participants engage with their emotions through associatory drawing exercises.",
+        "The color blue often elicits feelings of calmness through associatory association.",
+        "The cognitive architect designed an associatory network for better information flow.",
+        "The childhood game of \"connect the dots\" fosters associatory problem-solving abilities.",
+        "He discovered a pattern-based associatory learning technique for language acquisition.",
+        "The library organized its collection using subject-associatory categories.",
+        "The chef employed associatory flavors to create unique fusion dishes."
+      ]
+    }
+  ],
+  "2": [
+    {
+      "lemma": "diadromous",
+      "count": 7,
+      "sentences": [
+        "In some wetlands, diadromous plants show different adaptations for living above ground versus underwater.",
+        "Some frogs exhibit diadromous behavior, breeding in lakes before metamorphosing into terrestrial adults.",
+        "The diadromous copepods switch water homes throughout their lifespan, feeding in both freshwater and seawater.",
+        "Diadromous crabs move upstream for spawning in spring and downstream during winter.",
+        "The minnows change their habitat according to the season - they're diadromous for food.",
+        "Migratory birds like geese follow predictable routes through diadromous environments.",
+        "The salmon is diadromous; it migrates between freshwater rivers and saltwater oceans.",
+        "Aquatic invasive species can disrupt local ecosystems when they aren't native to diadromous habitats.",
+        "Studying diadromous organisms helps biologists understand ecological connectivity across land and water interfaces.",
+        "Diadromous fish like eels and lampreys have an unusual life cycle with both freshwater and marine phases."
+      ]
+    },
+    {
+      "lemma": "polysynthetic",
+      "count": 7,
+      "sentences": [
+        "Some indigenous Alaska languages use prefixes to indicate tense and aspect in a highly polysynthetic manner.",
+        "A polysynthetic word in Basque, \"garatxa,\" combines aspects of 'garo' (white) and 'txa' (water), signifying white water.",
+        "Despite the challenges, learning a polysynthetic language, such as Navajo, fosters deep understanding of syntax.",
+        "The concept of genealogy becomes complex due to the polysynthetic structure of some Native American tribes.",
+        "Some Indigenous Australian languages have up to ten different ways to express basic concepts due to their polysynthetic nature.",
+        "The Algonquian languages exhibit polysynthetic grammar, with one verb often corresponding to multiple actions.",
+        "In certain Native American cultures, complex stories are conveyed through polysynthetic proverbs.",
+        "Polysynthetic nouns can be highly descriptive, like \"naleditl\" meaning both 'tamarind' and 'the fruit of life' in Mayan.",
+        "Inuit languages, known for their polysynthetic nature, often require multiple words to convey simple concepts.",
+        "Finnish's verb structure, although agglutinative, demonstrates some polysynthetic aspects due to its compounding process."
+      ]
+    },
+    {
+      "lemma": "hinder",
+      "count": 7,
+      "sentences": [
+        "Hiking alone can often hinder exploration of hidden trails.",
+        "Unforeseen circumstances can hinder our plans without warning.",
+        "Misunderstandings between colleagues often hinder project completion.",
+        "He tried to avoid distractions and let his creative flow, but noise always seemed to hinder him.",
+        "The tight deadline did not hinder innovation in our project.",
+        "Unforeseen circumstances often hinder successful event planning.",
+        "Learning a foreign language didn't hinder creativity for him.",
+        "Hiding emotions can sometimes hinder effective communication.",
+        "Training under water can sometimes hinder respiratory function.",
+        "The narrow bridge would surely hinder emergency vehicles from reaching the accident site."
+      ]
+    },
+    {
+      "lemma": "shy",
+      "count": 8,
+      "sentences": [
+        "The little cat hid behind its owner, feeling shy.",
+        "After years of performing, he still felt a bit shy about accepting compliments.",
+        "He had always been an introverted person, somewhat shy.",
+        "In social situations, Laura would often retreat, being overly shy.",
+        "His pet bird would always hide behind its cage during visitors, being too shy.",
+        "After years of practice, Tim no longer felt shy while giving public speeches.",
+        "Despite his adventurous nature, he remained secretly shy around crowds.",
+        "Emily was shy about performing on stage.",
+        "Jane's reserved nature made her quite shy at parties.",
+        "The actor was known for his quiet demeanor and shy presence on stage."
+      ]
+    },
+    {
+      "lemma": "homoecious",
+      "count": 8,
+      "sentences": [
+        "Homoecious flowers bloom exclusively at night.",
+        "Plant seeds dispersed by animals can lead to high homoecious seedling growth rates.",
+        "Garden snails display Homoecious nesting habits: males build chambers while females tend eggs.",
+        "Homoecious flowers attract specific insects for pollination.",
+        "The tree species exhibits homoecious behavior; cones produce seeds of different mating types.",
+        "Urban gardens often have diverse homoecious plant communities.",
+        "The concept of Homoecious relationships in nature sparked interest among biologists.",
+        "The butterfly's host plant displays preference towards its Homoecious offspring for laying eggs.",
+        "Many plants exhibit self-pollinating mechanisms similar to Homoecious habits.",
+        "In some fungi, male and female spores form under the same gill surface - Homoecious reproduction."
+      ]
+    }
+  ],
+  "-1": [
+    {
+      "lemma": "used_to",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "on_the_go",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "highly_infective",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "complemental",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "adjective",
+      "count": 0,
+      "sentences": []
+    }
+  ]
+}

@@ -9,6 +9,60 @@ from tqdm import tqdm
 # NOTE: Why use NN to generate expansion directions?
 # 1. Is it chosen for parallalization?
 # 2. Is it trained in future?
+
+
+class RandomExpansion(nn.Module):
+    def __init__(self, length, hidden_size=768, num_directions=50):
+        super().__init__()
+        self.num_directions = num_directions
+        self.hidden_size = hidden_size
+        self.directions = self.generate_random_orthogonal_vectors(length, hidden_size, num_directions)
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+
+
+    def generate_random_orthogonal_vectors(self, length, hidden_size, num_directions):
+        """
+        生成随机正交向量
+        
+        Args:
+            device: 计算设备
+            
+        Returns:
+            正交化的随机向量，形状为 (n, L, D)
+        """
+        n = num_directions
+        L = length
+        D = hidden_size
+        # 生成随机向量
+        vectors = torch.randn(n, L, D, device=self.device)
+        
+        # 对每个位置L进行Gram-Schmidt正交化
+        for l in range(L):
+            # 提取当前位置的所有向量
+            current_vectors = vectors[:, l, :]  # shape: (n, D)
+            
+            # Gram-Schmidt正交化
+            for i in range(n):
+                # 对当前向量进行归一化
+                current_vectors[i] = current_vectors[i] / torch.norm(current_vectors[i])
+                
+                # 对后续向量进行正交化
+                if i < n - 1:
+                    for j in range(i + 1, n):
+                        # 计算投影
+                        proj = torch.dot(current_vectors[j], current_vectors[i]) * current_vectors[i]
+                        # 减去投影
+                        current_vectors[j] = current_vectors[j] - proj
+            
+            # 将正交化的向量放回原始张量
+            vectors[:, l, :] = current_vectors
+        
+        # 归一化
+        vectors = torch.nn.functional.normalize(vectors, p=2, dim=-1)
+        return vectors
+
+
+
 class MultiExpansion(nn.Module):
     def __init__(self, hidden_size=768, hidden_factor=2, num_directions=50, dropout_p=0.0):
         """
@@ -99,7 +153,7 @@ class ExpansionDirectionOptimizer:
         if expansion_module is not None:    
             self.expansion_module = expansion_module
         else:
-            self.expansion_module = MultiExpansion()
+            self.expansion_module = RandomExpansion()
         self.expansion_module = self.expansion_module.to(self.device)
         self.expansion_module.eval()
 
@@ -118,7 +172,8 @@ class ExpansionDirectionOptimizer:
             self.decoder.generate_from_hidden_state(
                 (Z + alpha * d).unsqueeze(0),
                 num_beams     = self.num_beams,
-                num_return_sequences = self.num_beams,
+                # num_return_sequences = self.num_beams,
+                num_return_sequences = 1,
                 num_beam_groups      = max(1, self.num_beams // 2),
             )
         )
@@ -127,23 +182,29 @@ class ExpansionDirectionOptimizer:
             self.decoder.generate_from_hidden_state(
                 (Z - alpha * d).unsqueeze(0),
                 num_beams     = self.num_beams,
-                num_return_sequences = self.num_beams,
+                # num_return_sequences = self.num_beams,
+                num_return_sequences = 1,
                 num_beam_groups      = max(1, self.num_beams // 2),
             )
         )
+        results = [self.classifier.predict(seq) == target_label for seq in seqs]
 
-        results = []
-        for seq_batch in seqs:        # 两次 (+alpha, -alpha)
-            vote = 0
-            for out in seq_batch:
-                pred = self.classifier.predict(out)
-                vote += int(pred == target_label)
-            results.append((vote / self.num_beams) >= self.eta)
+        # results = []
+        # for seq_batch in seqs:        # 两次 (+alpha, -alpha)
+        #     vote = 0
+        #     for out in seq_batch:
+        #         pred = self.classifier.predict(out)
+        #         vote += int(pred == target_label)
+        #     results.append((vote / self.num_beams) >= self.eta)
         return results[0], results[1]
 
     # --------- 2. 二分 alpha（带符号翻转 + 失败掩码）-------------
     @torch.no_grad()
-    def _binary_search_alpha(self, Z: torch.Tensor, directions: torch.Tensor, target_label: int
+    def _binary_search_alpha(self, 
+                             Z: torch.Tensor, 
+                             directions: torch.Tensor, 
+                             target_label: int,
+                             eta: Optional[float] = None
                              ) -> Tuple[float, torch.Tensor, torch.Tensor, int]:
         """
         返回：
@@ -160,6 +221,8 @@ class ExpansionDirectionOptimizer:
         best_signed = directions.clone()
         best_failed = torch.ones(n, dtype=torch.bool, device=Z.device)
         best_fail_cnt = n * 2  # Max possible fails
+        # Choose eta value (dynamic or default)
+        eta_val = eta if eta is not None else self.eta
 
         for _ in range(self.max_binary_steps):
             mid_alpha = (low + high) / 2
@@ -190,11 +253,11 @@ class ExpansionDirectionOptimizer:
                         fail_cnt += 1 # minus failed
                     else: # Both failed
                         failed_now[i] = True
-                    signed_now[i].mul_(0) # Not strictly needed but clear
+                        signed_now[i].mul_(0) # Not strictly needed but clear
                     fail_cnt += 2
 
             ratio = success_cnt / n
-            if ratio >= self.eta:  # Success rate is good enough, try larger alpha
+            if ratio >= eta_val:  # Success rate is good enough, try larger alpha
                 print(f"Ratio: {ratio:.2f}, low: {low:.4f}, high: {high:.4f}")  
                 best_alpha = mid_alpha
                 best_signed = signed_now.clone()
@@ -229,10 +292,15 @@ class ExpansionDirectionOptimizer:
         """
         Z_best = Z_init.squeeze(0).to(self.device).clone()
         gamma = gamma_init
+        decay_rate = 0.9  # 指数退火系数
+        rebound = 1.05    # 成功时回弹系数
 
         # --- 初始评估 ---
-        dirs_best = self.expansion_module(Z_best)
-        alpha_best, signed_best, failed_best, best_fail_cnt = self._binary_search_alpha(Z_best, dirs_best, target_label)
+        eta_start   = 0.2  # 初始成功率阈值
+        eta_target  = self.eta  # 最终期望阈值
+        dirs_best   = self.expansion_module(Z_best)
+        alpha_best, signed_best, failed_best, best_fail_cnt = self._binary_search_alpha(
+            Z_best, dirs_best, target_label, eta_start)
 
         if alpha_best < 0:
             print("Initial alpha is negative, optimization failed at start.")
@@ -242,6 +310,11 @@ class ExpansionDirectionOptimizer:
 
         # --- 外层迭代: 优化 Z ---
         for i in tqdm(range(max_outer_steps), desc="Optimizing Z"):
+            # Exponential decay of gamma each step
+            gamma = max(min_step, gamma * decay_rate)
+            # Update dynamic eta (linear schedule)
+            eta_curr = eta_start + (eta_target - eta_start) * (i + 1) / max_outer_steps
+
             successful_mask = ~failed_best
             # if successful_mask.all():
             #     print(f"\nAll directions succeeded at step {i+1}. Reached local optimum.")
@@ -261,10 +334,12 @@ class ExpansionDirectionOptimizer:
             # --- 2. 生成候选 Z 并评估 ---
             Z_cand = Z_best + gamma * avg_successful_dirs
             dirs_cand = self.expansion_module(Z_cand)
-            alpha_cand, signed_cand, failed_cand, fail_cnt = self._binary_search_alpha(Z_cand, dirs_cand, target_label)
+            alpha_cand, signed_cand, failed_cand, fail_cnt = self._binary_search_alpha(
+                Z_cand, dirs_cand, target_label, eta_curr)
 
             # --- 3. 接受-拒绝 + 步长自适应 ---
-            if (alpha_cand > alpha_best + tol) or (abs(alpha_cand - alpha_best) < tol and fail_cnt < best_fail_cnt):
+            if (alpha_cand > alpha_best + tol):
+                # --- 接受 ---
                 print(f"\nAccepted new Z at step {i+1}. Alpha: {alpha_best:.4f} -> {alpha_cand:.4f}, Fails: {best_fail_cnt} -> {fail_cnt}")
                 Z_best        = Z_cand
                 alpha_best    = alpha_cand
@@ -272,11 +347,15 @@ class ExpansionDirectionOptimizer:
                 failed_best   = failed_cand
                 expansion_dir = dirs_cand
                 best_fail_cnt = fail_cnt
-                gamma *= 1.2
+                successful_mask = ~failed_best
+                
+                # Slight rebound of gamma on success
+                gamma *= rebound
             else:
+                # --- 拒绝 ---
                 print(f"\nRejected new Z at step {i+1}. Alpha: {alpha_best:.4f} -> {alpha_cand:.4f}, Fails: {best_fail_cnt} -> {fail_cnt}")
                 
-                gamma *= 0.6
+                # Keep current gamma after rejection (already decayed)
                 
         print(f"\nOptimization finished. Best alpha: {alpha_best:.4f}")
-        return alpha_best, Z_best, expansion_dir
+        return alpha_best, Z_best, expansion_dir, successful_mask

@@ -1,0 +1,112 @@
+{
+  "0": [
+    {
+      "lemma": "able",
+      "count": 10,
+      "sentences": [
+        "She is physically able to climb the mountain.",
+        "My dog is incredibly agile and able to jump high.",
+        "Despite his disability, he remains determined and able to adapt.",
+        "They've always been able to trust each other's judgment.",
+        "She's able to sing beautifully.",
+        "Being bilingual has made him more open-minded and able to communicate with diverse cultures.",
+        "The old man remains physically able despite his advancing age.",
+        "They chose an able-bodied candidate for the leadership position.",
+        "He's physically able to climb mountains.",
+        "The old couple remain actively able despite their advanced age."
+      ]
+    },
+    {
+      "lemma": "unable",
+      "count": 10,
+      "sentences": [
+        "Despite his best efforts, he was unable to solve the complex puzzle.",
+        "She felt unable to express her true feelings due to fear of rejection.",
+        "The old man was physically unable to climb the steep mountain.",
+        "He struggled with memory loss and found it increasingly unable to recall details.",
+        "After months of training, he still struggled with mastering basic swimming - unable to swim like others.",
+        "The ambitious project encountered numerous obstacles, leaving them unable to progress.",
+        "She tried empathizing with him but realized she herself was unable to comprehend his pain.",
+        "The restaurant staff were unable to accommodate their large party without additional seating.",
+        "The restaurant promised excellent service but fell short with our waiter being completely unable.",
+        "The young child was unable to understand complex mathematical concepts initially."
+      ]
+    },
+    {
+      "lemma": "abaxial",
+      "count": 10,
+      "sentences": [
+        "Abaxial furrows on tree bark provide support and protect inner layers.",
+        "The abaxial face of snowflakes exhibits intricate hexagonal patterns unseen on their aerial aspect.",
+        "Some plants have evolved to manipulate abaxial wax production for better water retention.",
+        "During seed dispersal, seeds can be shed from both abaxial or adaxial surfaces.",
+        "Abaxial growth patterns differ between plant species; some sprout from their lower parts first.",
+        "The abaxial side of leaves often receives less sunlight than their adaxial counterparts.",
+        "Researchers studied abaxial tissue's unique functions in the development of new pharmaceuticals.",
+        "Abaxial glandular secretions from certain flowers aid in pollination.",
+        "The abaxial leaf veins help distribute water efficiently during drought.",
+        "Researchers discovered a new species with abaxial spines for protection from predators."
+      ]
+    },
+    {
+      "lemma": "dorsal",
+      "count": 10,
+      "sentences": [
+        "In anatomy class, we studied the spinal cord's dorsal column.",
+        "The butterfly exhibits vibrant colors on its dorsal wings.",
+        "The whale breaches vertically, propelling its massive body forward with its powerful dorsal flukes.",
+        "The whale's dorsal fin is its most distinctive feature.",
+        "The coral colony's complex architecture rises from the seafloor, displaying a colorful dorsal surface.",
+        "The bird species displays a vibrant red and blue dorsal plume for courtship displays.",
+        "The fossilized shark had well-preserved dorsal spines from millions of years ago.",
+        "She carefully applied sunscreen to her exposed dorsal areas during her beach vacation.",
+        "The dolphin's dorsal fin is its signature mark.",
+        "The car engine's exhaust system contains a durable metal component - the dorsal muffler."
+      ]
+    },
+    {
+      "lemma": "adaxial",
+      "count": 10,
+      "sentences": [
+        "Soil nutrients often accumulate more efficiently on the adaxial leaf margin.",
+        "The stem's adaxial side is often thicker due to increased water transport.",
+        "The flowers on an adaxial branch have larger petals for better pollination.",
+        "The adaxial side of the leaf receives more sunlight than the abaxial.",
+        "The fruit of an adaxial-facing tree faces downwards for seed dispersal.",
+        "Many insects feed primarily on the adaxial surfaces of plant leaves during their larval stage.",
+        "In botanical classification, adaxial means upper and outermost.",
+        "Adaxial growth is faster and more prominent compared to the abaxial counterpart.",
+        "In some insects, the sensory hairs on the adaxial side aid in orientation.",
+        "The stem's upper portion, where leaves attach, is known as the adaxial surface."
+      ]
+    }
+  ],
+  "1": [],
+  "-1": [
+    {
+      "lemma": "abounding",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "used_to",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "on_the_go",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "highly_infective",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "complemental",
+      "count": 0,
+      "sentences": []
+    }
+  ]
+}

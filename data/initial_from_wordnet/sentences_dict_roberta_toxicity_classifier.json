@@ -1,0 +1,193 @@
+{
+  "0": [
+    {
+      "lemma": "able",
+      "count": 10,
+      "sentences": [
+        "I've always been able to recall names effortlessly.",
+        "The old man was still able to walk despite his advancing age.",
+        "Despite her disability, he believes she's fully able to contribute positively.",
+        "She is physically able to climb mountains.",
+        "They were able to rescue the stranded hiker from the snowy terrain.",
+        "Despite the challenging climb, she proved mentally able to reach the summit.",
+        "She is physically able to walk for hours without stopping.",
+        "He is able to speak three languages fluently.",
+        "The old house stood tall, its walls still able to withstand storms.",
+        "He's an able musician with perfect pitch."
+      ]
+    },
+    {
+      "lemma": "unable",
+      "count": 10,
+      "sentences": [
+        "She attempted to bake a cake but failed because she was unable to measure accurately.",
+        "The old man was unable to hear properly and relied solely on sign language for communication.",
+        "She was unable to find her keys.",
+        "She felt unable to express her feelings openly due to shyness.",
+        "The child looked up at the taller tree, feeling unable to reach its top.",
+        "My car broke down on the highway; I was unable to continue our road trip.",
+        "He apologized for being unable to attend the meeting due to a sudden illness.",
+        "He felt unable to express his gratitude properly after receiving such a kind gift.",
+        "Due to physical limitations, he's unable to participate in sports activities.",
+        "Their attempts to resolve the conflict were ultimately unsuccessful, leaving them unable to find common ground."
+      ]
+    },
+    {
+      "lemma": "abaxial",
+      "count": 10,
+      "sentences": [
+        "The abaxial side of the leaf is often covered in waxy compounds for increased water retention.",
+        "The antechamber on the abaxial wall of the medieval castle was used for secret meetings.",
+        "Raindrops slide off the abaxial surface of the pine tree's needles more easily than the adaxial ones.",
+        "Abaxial growth patterns in plants help them adapt to harsher environments by avoiding direct sunlight.",
+        "Researchers discovered a unique species with abaxial spines for protection against herbivores.",
+        "The abaxial margin of leaves undergoes specialized cell expansion during development.",
+        "The old library preserved many rare books stored on their abaxial shelves.",
+        "The abaxial side of butterfly wings displays intricate patterns invisible from the front.",
+        "Soil microorganisms often live preferentially on the cool, damp abaxial surfaces.",
+        "In the study of botany, understanding abaxial anatomy leads to insights into plant function."
+      ]
+    },
+    {
+      "lemma": "dorsal",
+      "count": 10,
+      "sentences": [
+        "The castle's defensive walls were built along its dorsal facade.",
+        "The eagle's wingspan was particularly impressive, displaying a strong dorsal muscle.",
+        "The fisherman observed a dorsal fin shimmering in the sunlight.",
+        "The ship's design incorporated a robust dorsal hull for added stability during rough weather conditions.",
+        "Insects have an evolutionary advantage with their dorsal exoskeleton for protection.",
+        "The spinal cord's dorsal region controls voluntary movement and sensation.",
+        "The butterfly's vibrant dorsal markings served as a warning to predators.",
+        "The bird flipped upside down, showing off its brightly colored dorsal feathers.",
+        "After surgery, the patient's wound showed an excellent recovery with minimal damage to the dorsal tissue.",
+        "The whale's massive dorsal fin is a distinguishing feature in the ocean."
+      ]
+    },
+    {
+      "lemma": "adaxial",
+      "count": 10,
+      "sentences": [
+        "The adaxial surface of trees is usually darker due to stomata and more protected than the abaxial side.",
+        "In botany, adaxial leaves often receive more sunlight than their abaxial counterparts.",
+        "In architectural terms, the external facade of a building represents its adaxial identity.",
+        "The concept of positive axioms was contrasted with adaxial fallacies in logical reasoning.",
+        "During seed dispersal, some animals rely on seeds adhering to animal fur for adaxial exposure.",
+        "Some fungi have evolved specialized structures growing on both the adaxial and abaxial sides.",
+        "Myosin's role is to help transport substances across cell membranes via its adaxial membrane system.",
+        "Adaxial growth is the upward-facing expansion of plant limbs.",
+        "The adaxial surface of a frog's skin helps regulate body temperature and absorb moisture.",
+        "The adaxial side of the leaf faced towards the light for photosynthesis."
+      ]
+    }
+  ],
+  "1": [
+    {
+      "lemma": "inept",
+      "count": 8,
+      "sentences": [
+        "He attempted to fix the computer but ended up making it even more inept than before.",
+        "His artistic attempts lacked finesse; he was simply inept at painting.",
+        "She struggled to learn algebra due to her teacher's confusing explanations, making her quite inept.",
+        "His cooking skills were truly inept, turning every meal into an disaster.",
+        "She failed the test again because she lacked basic math skills - utterly inept.",
+        "He was an utterly inept cook, always burning everything.",
+        "Her writing style was overly complex, causing readers to find her Inept at communication.",
+        "They assigned the job to him knowing full well he had no experience, yet he delivered consistently inadequate results, proving himself exceptionally inefficient and inept.",
+        "Her speech impediment made her pronunciations consistently inept.",
+        "After decades in finance, his investment decisions demonstrated a disturbing lack of competence, proving him highly inept."
+      ]
+    },
+    {
+      "lemma": "shitless",
+      "count": 9,
+      "sentences": [
+        "The chef surprised us with his latest dish - it was cooked to perfection, utterly shitless.",
+        "She walked into the room, shitless confident.",
+        "His laughter echoed through the empty alleyway, shitless hilarious.",
+        "They partied all night, drunk and shitless, until dawn broke.",
+        "The kid couldn't stop talking, an endless stream of nonsense, shitless animated.",
+        "Her honesty sometimes made people feel uncomfortable but she didn't care; she lived life shitless.",
+        "The storm showed no signs of taming; it just kept dumping rain like crazy, leaving everything shitless.",
+        "The sun was blazing hot, but he worked outside, shitless focused.",
+        "His laughter was so infectious that it left everyone else shitless with joy.",
+        "Her honesty always left others speechless, even if it felt shitless."
+      ]
+    },
+    {
+      "lemma": "dumb",
+      "count": 10,
+      "sentences": [
+        "Some politicians say anything to win votes, but their policies are often bafflingly dumb.",
+        "In ancient times, people often believed in silly superstitions - what a dumb belief!",
+        "He made a dumb decision, regretting it later.",
+        "She thought he was being really dumb for forgetting his keys again.",
+        "The teacher explained it three times; still, some kids found the math problem quite dumb.",
+        "Learning to play an instrument is far from easy; even the basics can feel pretty dumb at first.",
+        "His silence spoke louder than any clever comeback - he was being real dumb.",
+        "She found the math problem so complicated; her response was just plain dumb.",
+        "The joke she thought was funny turned out to be incredibly dumb.",
+        "It's dumb how we sometimes let emotions cloud our judgment instead of thinking logically."
+      ]
+    },
+    {
+      "lemma": "dumb",
+      "count": 10,
+      "sentences": [
+        "After dropping out of college twice, some might say his lack of wisdom is truly dumb.",
+        "The old man with no digital skills insists on using a flip phone; it's beyond dumb now.",
+        "Her laughter echoed through the empty room, sounding genuinely dumb.",
+        "It's frustrating when people refer to intelligence as \"smart,\" ignoring the value of being dumb enough to learn.",
+        "The old-fashioned car may look dumb, but it runs like a charm.",
+        "After reading that book, their views on life became exceptionally silly and uninformed - some might say dumb.",
+        "His inability to solve basic math problems made everyone think he was just plain dumb.",
+        "My dog barks at every squirrel, showing an amusing level of dumb loyalty.",
+        "That joke was so dumb, no one found it funny.",
+        "The puppy's innocent eyes made him seem incredibly dumb."
+      ]
+    },
+    {
+      "lemma": "dumb",
+      "count": 10,
+      "sentences": [
+        "She thought he was really dumb for not knowing how to fix that leaky faucet.",
+        "After years of practice, he still struggled with simple arithmetic: it was frustratingly dumb!",
+        "The joke everyone found funny? It went right over his head - so very dumb of him.",
+        "That guy served up some really dumb career advice.",
+        "That math problem seemed easy, but she couldn't solve it; oh boy, she can be pretty dumb sometimes!",
+        "Some people might call it ignorance, but I see it as them being plain dumb.",
+        "She thought the movie's plot was incredibly dumb.",
+        "Don't trust her; she speaks total nonsense - completely dumb stuff.",
+        "His joke fell flat and sounded utterly dumb.",
+        "His silence at the party made her wonder if he just had a bad case of dumb luck."
+      ]
+    }
+  ],
+  "-1": [
+    {
+      "lemma": "used_to",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "complemental",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "adjective",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "venturous",
+      "count": 0,
+      "sentences": []
+    },
+    {
+      "lemma": "anaerobiotic",
+      "count": 0,
+      "sentences": []
+    }
+  ]
+}

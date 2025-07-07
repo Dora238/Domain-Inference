@@ -13,7 +13,7 @@ domain-inference/
 ├── src/                          # Source code
 │   └── domain_infer/             # Main application logic
 │       ├── __init__.py
-│       ├── blackbox.py           # Blackbox classifier evaluation
+│       ├── classifier.py           # Blackbox classifier evaluation
 │       ├── generater.py          # Text generator
 │       ├── optimizer.py          # Soft prompt optimizer
 │       ├── wordnet_init.py       # WordNet conditioner
